@@ -1,0 +1,1016 @@
+openapi: 3.0.3
+info:
+  title: AI Vision API
+  description: |
+    Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
+    
+    ## Features
+    - **Background Removal**: Automatically remove backgrounds from images
+    - **Object Extraction**: Extract objects using bounding boxes or point selection
+    - **Human Generation**: Generate photorealistic human images from text prompts
+    - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts
+    - **Image Outpainting**: Extend images beyond their original boundaries
+    - **Image Inpainting**: Fill in missing or damaged parts of images
+    - **Inpainting Removal**: Remove objects from images using AI inpainting
+    
+    ## Authentication
+    Currently, authentication is disabled for local development. In production, JWT authentication will be required.
+    
+    ## File Upload Limits
+    - Maximum file size: 35MB
+    - Supported formats: JPEG, PNG, WebP
+    - Maximum files per request: 10
+    
+    ## Services
+    - **Mico (ComfyICU)**: Primary AI service for most operations
+    - **Flux**: Alternative service for inpainting and outpainting
+    - **OpenAI**: Advanced service for inpainting and outpainting
+    
+    ## Rate Limits
+    - Standard rate limiting applies
+    - GPU accelerator options: low, medium, high
+  version: 1.0.0
+  contact:
+    name: AI Vision API Support
+    email: support@example.com
+  license:
+    name: ISC
+    url: https://opensource.org/licenses/ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: AI Vision
+    description: AI-powered image processing and generation endpoints
+
+paths:
+  /aivision/autoBackgroundRemoval:
+    post:
+      summary: Remove background from image
+      description: |
+        Automatically remove the background from an uploaded image using AI.
+        The service uses ComfyICU platform for background removal processing.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to process (JPEG, PNG, WebP, max 35MB)
+              required:
+                - file
+            examples:
+              basic:
+                summary: Basic background removal
+                description: Upload an image to remove its background
+                value:
+                  file: "portrait.jpg"
+              product:
+                summary: Product image background removal
+                description: Remove background from a product photo
+                value:
+                  file: "product.png"
+      responses:
+        '200':
+          description: Background removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful background removal
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      success: true
+                      message: "Background removed successfully"
+                      data: ["https://s3.amazonaws.com/bucket/processed/background-removed-12345.png"]
+        '400':
+          description: Bad request - missing or invalid file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_file:
+                  summary: Missing file error
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                invalid_file:
+                  summary: Invalid file type error
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/objectsExtraction:
+    post:
+      summary: Extract objects from image
+      description: |
+        Extract objects from an image using either bounding boxes or point selection.
+        Supports both object extraction (with bounding boxes) and object segmentation (with points).
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to process (JPEG, PNG, WebP, max 35MB)
+                bboxes:
+                  type: string
+                  description: |
+                    JSON array of bounding boxes for object extraction.
+                    Format: [{"startX": 0, "startY": 0, "endX": 100, "endY": 100}]
+                points:
+                  type: string
+                  description: |
+                    JSON object with positive and negative points for segmentation.
+                    Format: {"positive": [{"x": 100, "y": 100}], "negative": [{"x": 0, "y": 0}]}
+              required:
+                - file
+              oneOf:
+                - required: [bboxes]
+                - required: [points]
+            examples:
+              bounding_boxes:
+                summary: Extract using bounding boxes
+                description: Extract objects using precise bounding box coordinates
+                value:
+                  file: "scene.jpg"
+                  bboxes: '[{"startX": 100, "startY": 150, "endX": 300, "endY": 400}, {"startX": 500, "startY": 200, "endX": 700, "endY": 450}]'
+              single_object:
+                summary: Extract single object with bounding box
+                description: Extract one object using a single bounding box
+                value:
+                  file: "portrait.jpg"
+                  bboxes: '[{"startX": 50, "startY": 50, "endX": 250, "endY": 350}]'
+              points_segmentation:
+                summary: Extract using points
+                description: Use point selection for precise object segmentation
+                value:
+                  file: "complex_scene.jpg"
+                  points: '{"positive": [{"x": 150, "y": 200}, {"x": 160, "y": 210}], "negative": [{"x": 0, "y": 0}, {"x": 800, "y": 600}]}'
+      responses:
+        '200':
+          description: Objects extracted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful object extraction
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      success: true
+                      message: "Objects extracted successfully"
+                      data: ["https://s3.amazonaws.com/bucket/extracted/object-12345.png"]
+        '400':
+          description: Bad request - missing file or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_file:
+                  summary: Missing file error
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                missing_parameters:
+                  summary: Missing bboxes or points
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '422':
+          description: Unprocessable entity - invalid JSON format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_json:
+                  summary: Invalid JSON format
+                  value:
+                    status_code: 422
+                    message: "UNPROCESSABLE_ENTITY"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/humanGeneration:
+    post:
+      summary: Generate human images
+      description: |
+        Generate photorealistic human images from text prompts using AI.
+        The service automatically translates prompts to English and optimizes them for human face generation.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanGenerationRequest'
+            examples:
+              basic:
+                summary: Basic human generation
+                description: Generate a simple human portrait
+                value:
+                  prompt: "A beautiful woman in a garden"
+                  width: 1024
+                  height: 768
+                  batchSize: 3
+                  accelerator: "medium"
+              portrait:
+                summary: Professional portrait
+                description: Generate a professional headshot
+                value:
+                  prompt: "Professional headshot of a confident businesswoman"
+                  width: 1024
+                  height: 1024
+                  batchSize: 1
+                  accelerator: "high"
+              casual:
+                summary: Casual portrait
+                description: Generate a casual, friendly portrait
+                value:
+                  prompt: "A young man with a friendly smile in casual clothing"
+                  width: 768
+                  height: 1024
+                  batchSize: 2
+                  accelerator: "medium"
+              minimal:
+                summary: Minimal parameters
+                description: Use only required parameters with defaults
+                value:
+                  prompt: "A happy person"
+      responses:
+        '200':
+          description: Human images generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful generation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: [
+                      "https://s3.amazonaws.com/bucket/generated/human-1-12345.png",
+                      "https://s3.amazonaws.com/bucket/generated/human-2-12345.png",
+                      "https://s3.amazonaws.com/bucket/generated/human-3-12345.png"
+                    ]
+        '400':
+          description: Bad request - missing prompt or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_prompt:
+                  summary: Missing prompt
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                invalid_dimensions:
+                  summary: Invalid dimensions
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/stockPhotoGeneration:
+    post:
+      summary: Generate stock photo style images
+      description: |
+        Generate stock photo style images from text prompts using AI.
+        Supports prompt enhancement with OpenAI for better results.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockPhotoGenerationRequest'
+            examples:
+              basic:
+                summary: Basic stock photo generation
+                description: Generate a simple stock photo
+                value:
+                  prompt: "A modern office workspace"
+                  width: 1024
+                  height: 1024
+                  batchSize: 3
+                  accelerator: "medium"
+                  promptEnhancer: false
+              enhanced:
+                summary: Enhanced prompt generation
+                description: Use OpenAI to enhance the prompt
+                value:
+                  prompt: "A business meeting"
+                  width: 1024
+                  height: 1024
+                  batchSize: 2
+                  accelerator: "high"
+                  promptEnhancer: true
+              landscape:
+                summary: Landscape stock photo
+                description: Generate a landscape stock photo
+                value:
+                  prompt: "A beautiful sunset over mountains"
+                  width: 1024
+                  height: 768
+                  batchSize: 1
+                  accelerator: "medium"
+                  promptEnhancer: false
+              minimal:
+                summary: Minimal parameters
+                description: Use only required parameters with defaults
+                value:
+                  prompt: "A coffee cup on a desk"
+      responses:
+        '200':
+          description: Stock photos generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful generation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: [
+                      "https://s3.amazonaws.com/bucket/generated/stock-1-12345.png",
+                      "https://s3.amazonaws.com/bucket/generated/stock-2-12345.png",
+                      "https://s3.amazonaws.com/bucket/generated/stock-3-12345.png"
+                    ]
+        '400':
+          description: Bad request - missing prompt or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_prompt:
+                  summary: Missing prompt
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                invalid_dimensions:
+                  summary: Invalid dimensions
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/imageOutpainting:
+    post:
+      summary: Extend image boundaries
+      description: |
+        Extend an image beyond its original boundaries using AI outpainting.
+        Supports Mico (ComfyICU), Flux, and OpenAI services for processing.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to extend (JPEG, PNG, WebP, max 35MB)
+                left:
+                  type: integer
+                  description: Pixels to extend on the left side
+                  default: 128
+                top:
+                  type: integer
+                  description: Pixels to extend on the top side
+                  default: 128
+                right:
+                  type: integer
+                  description: Pixels to extend on the right side
+                  default: 128
+                bottom:
+                  type: integer
+                  description: Pixels to extend on the bottom side
+                  default: 128
+                service:
+                  type: string
+                  enum: [mico, flux, openai]
+                  description: Processing service to use
+                  default: mico
+                prompt:
+                  type: string
+                  description: Text prompt for the extension (optional)
+            examples:
+              basic:
+                summary: Basic outpainting
+                description: Extend image with default settings
+                value:
+                  file: "landscape.jpg"
+                  left: "128"
+                  top: "128"
+                  right: "128"
+                  bottom: "128"
+                  service: "mico"
+              wide_extension:
+                summary: Wide horizontal extension
+                description: Extend image horizontally more than vertically
+                value:
+                  file: "portrait.jpg"
+                  left: "256"
+                  top: "64"
+                  right: "256"
+                  bottom: "64"
+                  service: "mico"
+              flux_service:
+                summary: Using Flux service
+                description: Use Flux service with custom prompt
+                value:
+                  file: "interior.jpg"
+                  left: "128"
+                  top: "128"
+                  right: "128"
+                  bottom: "128"
+                  service: "flux"
+                  prompt: "Extend the image naturally with realistic details"
+              openai_service:
+                summary: Using OpenAI service
+                description: Use OpenAI service for advanced outpainting
+                value:
+                  file: "landscape.jpg"
+                  left: "128"
+                  top: "128"
+                  right: "128"
+                  bottom: "128"
+                  service: "openai"
+                  prompt: "Extend the landscape with mountains and sky"
+              minimal:
+                summary: Minimal parameters
+                description: Use only the required file parameter
+                value:
+                  file: "photo.jpg"
+      responses:
+        '200':
+          description: Image outpainting completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful outpainting
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: ["https://s3.amazonaws.com/bucket/outpainted/landscape-extended-12345.png"]
+        '400':
+          description: Bad request - missing file or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_file:
+                  summary: Missing file
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/imageInpainting:
+    post:
+      summary: Fill missing parts of image
+      description: |
+        Fill in missing or damaged parts of an image using AI inpainting.
+        Supports Mico (ComfyICU), Flux, and OpenAI services.
+        For Flux and OpenAI services, only the original image and prompt are required.
+        For Mico service, both original image and mask are required.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Original image file (JPEG, PNG, WebP, max 35MB)
+                maskFile:
+                  type: string
+                  format: binary
+                  description: Mask file indicating areas to fill (required for Mico service)
+                prompt:
+                  type: string
+                  description: Text prompt describing what to fill (required for Flux/OpenAI services)
+                accelerator:
+                  type: string
+                  enum: [low, medium, high]
+                  description: GPU accelerator level
+                  default: medium
+                service:
+                  type: string
+                  enum: [mico, flux, openai]
+                  description: Processing service to use
+                  default: mico
+            examples:
+              mico_service:
+                summary: Using Mico service
+                description: Use Mico service with mask file
+                value:
+                  file: "damaged_photo.jpg"
+                  maskFile: "damage_mask.png"
+                  prompt: "Complete the image with realistic details"
+                  accelerator: "medium"
+                  service: "mico"
+              flux_service:
+                summary: Using Flux service
+                description: Use Flux service with prompt only
+                value:
+                  file: "incomplete_landscape.jpg"
+                  prompt: "Fill the missing area with a beautiful landscape"
+                  service: "flux"
+              openai_service:
+                summary: Using OpenAI service
+                description: Use OpenAI service with prompt only
+                value:
+                  file: "old_photo.jpg"
+                  prompt: "Restore the damaged areas naturally"
+                  accelerator: "high"
+                  service: "openai"
+              high_quality:
+                summary: High quality inpainting
+                description: Use high accelerator for better quality
+                value:
+                  file: "old_photo.jpg"
+                  maskFile: "scratches_mask.png"
+                  prompt: "Restore the damaged areas naturally"
+                  accelerator: "high"
+                  service: "mico"
+      responses:
+        '200':
+          description: Image inpainting completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful inpainting
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: ["https://s3.amazonaws.com/bucket/inpainted/restored-photo-12345.png"]
+        '400':
+          description: Bad request - missing files or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_files:
+                  summary: Missing required files
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/imageInpaintingRemoval:
+    post:
+      summary: Remove objects using inpainting
+      description: |
+        Remove objects from an image using AI inpainting techniques.
+        Supports Mico (ComfyICU), Flux, and OpenAI services.
+        For Flux and OpenAI services, only the original image and prompt are required.
+        For Mico service, both original image and mask are required.
+      tags:
+        - AI Vision
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Original image file (JPEG, PNG, WebP, max 35MB)
+                maskFile:
+                  type: string
+                  format: binary
+                  description: Mask file indicating areas to remove (required for Mico service)
+                prompt:
+                  type: string
+                  description: Text prompt describing what to remove (required for Flux/OpenAI services)
+                accelerator:
+                  type: string
+                  enum: [low, medium, high]
+                  description: GPU accelerator level
+                  default: medium
+                service:
+                  type: string
+                  enum: [mico, flux, openai]
+                  description: Processing service to use
+                  default: mico
+            examples:
+              mico_service:
+                summary: Using Mico service
+                description: Remove object using Mico service with mask
+                value:
+                  file: "photo_with_person.jpg"
+                  maskFile: "person_mask.png"
+                  prompt: "Remove the specified area and fill with realistic details"
+                  accelerator: "medium"
+                  service: "mico"
+              flux_service:
+                summary: Using Flux service
+                description: Remove object using Flux service with prompt
+                value:
+                  file: "crowded_street.jpg"
+                  prompt: "Remove the person from the background"
+                  service: "flux"
+              openai_service:
+                summary: Using OpenAI service
+                description: Remove object using OpenAI service with prompt
+                value:
+                  file: "group_photo.jpg"
+                  prompt: "Remove the unwanted person from the photo"
+                  accelerator: "high"
+                  service: "openai"
+              remove_multiple:
+                summary: Remove multiple objects
+                description: Remove several objects from the image
+                value:
+                  file: "group_photo.jpg"
+                  maskFile: "unwanted_objects_mask.png"
+                  prompt: "Remove all marked objects and fill naturally"
+                  accelerator: "high"
+                  service: "mico"
+      responses:
+        '200':
+          description: Object removal completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful object removal
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: ["https://s3.amazonaws.com/bucket/removed/clean-photo-12345.png"]
+        '400':
+          description: Bad request - missing files or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_files:
+                  summary: Missing required files
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+components:
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 200
+        message:
+          type: string
+          description: Response message
+          example: "SUCCESS"
+        result:
+          oneOf:
+            - type: object
+              properties:
+                success:
+                  type: boolean
+                  description: Operation success status
+                  example: true
+                message:
+                  type: string
+                  description: Operation message
+                  example: "Background removed successfully"
+                data:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of result URLs
+                  example: ["https://s3.amazonaws.com/bucket/processed/image-12345.png"]
+            - type: array
+              items:
+                type: string
+              description: Array of result URLs
+              example: ["https://s3.amazonaws.com/bucket/generated/image-1.png", "https://s3.amazonaws.com/bucket/generated/image-2.png"]
+      required:
+        - status_code
+        - message
+        - result
+
+    ErrorResponse:
+      type: object
+      properties:
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "BAD_REQUEST"
+        result:
+          type: null
+          description: Null result for errors
+      required:
+        - status_code
+        - message
+        - result
+
+    HumanGenerationRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          description: Text prompt describing the human to generate
+          example: "A beautiful woman in a garden"
+          minLength: 1
+        width:
+          type: integer
+          description: Image width in pixels
+          minimum: 64
+          maximum: 2048
+          default: 1024
+          example: 1024
+        height:
+          type: integer
+          description: Image height in pixels
+          minimum: 64
+          maximum: 2048
+          default: 768
+          example: 768
+        batchSize:
+          type: integer
+          description: Number of images to generate
+          minimum: 1
+          maximum: 10
+          default: 3
+          example: 3
+        accelerator:
+          type: string
+          enum: [low, medium, high]
+          description: GPU accelerator level
+          default: medium
+          example: medium
+      required:
+        - prompt
+
+    StockPhotoGenerationRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          description: Text prompt describing the stock photo to generate
+          example: "A modern office workspace"
+          minLength: 1
+        width:
+          type: integer
+          description: Image width in pixels
+          minimum: 64
+          maximum: 2048
+          default: 1024
+          example: 1024
+        height:
+          type: integer
+          description: Image height in pixels
+          minimum: 64
+          maximum: 2048
+          default: 1024
+          example: 1024
+        batchSize:
+          type: integer
+          description: Number of images to generate
+          minimum: 1
+          maximum: 10
+          default: 3
+          example: 3
+        accelerator:
+          type: string
+          enum: [low, medium, high]
+          description: GPU accelerator level
+          default: medium
+          example: medium
+        promptEnhancer:
+          type: boolean
+          description: If true, enhances the prompt with OpenAI after translation
+          default: false
+          example: false
+      required:
+        - prompt
+
+    BoundingBox:
+      type: object
+      properties:
+        startX:
+          type: integer
+          description: Starting X coordinate
+          minimum: 0
+          example: 100
+        startY:
+          type: integer
+          description: Starting Y coordinate
+          minimum: 0
+          example: 150
+        endX:
+          type: integer
+          description: Ending X coordinate
+          minimum: 0
+          example: 300
+        endY:
+          type: integer
+          description: Ending Y coordinate
+          minimum: 0
+          example: 400
+      required:
+        - startX
+        - startY
+        - endX
+        - endY
+
+    Point:
+      type: object
+      properties:
+        x:
+          type: integer
+          description: X coordinate
+          example: 150
+        y:
+          type: integer
+          description: Y coordinate
+          example: 200
+      required:
+        - x
+        - y
+
+    OutpaintingOptions:
+      type: object
+      properties:
+        left:
+          type: integer
+          description: Pixels to extend on the left
+          default: 128
+          example: 128
+        top:
+          type: integer
+          description: Pixels to extend on the top
+          default: 128
+          example: 128
+        right:
+          type: integer
+          description: Pixels to extend on the right
+          default: 128
+          example: 128
+        bottom:
+          type: integer
+          description: Pixels to extend on the bottom
+          default: 128
+          example: 128
+
+security:
+  - BearerAuth: [] 
