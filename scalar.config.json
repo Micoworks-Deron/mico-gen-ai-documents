@@ -1,0 +1,10 @@
+{
+  "references": [
+    {
+      "name": "AI Vision API",
+      "path": "api-documents.yaml"
+    }
+  ],
+  "guides": []
+}
+
