@@ -38,10 +38,12 @@ info:
     url: https://opensource.org/licenses/ISC
 
 servers:
-  - url: http://localhost:3000
-    description: Development server
-  - url: https://api.example.com
-    description: Production server
+  - url: https://mico.gen.ai.dev-craft.mico.one
+    description: Development server (dev)
+  - url: https://mico.gen.ai.stg-craft.mico.one
+    description: Staging server (stg)
+  - url: https://mico.gen.ai.craft.mico.one/
+    description: Production server (prd)
 
 tags:
   - name: AI Vision
