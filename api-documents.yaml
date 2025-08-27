@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: AI Vision API
+  title: Generative AI API
   description: |
     Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
     
@@ -31,8 +31,8 @@ info:
     - GPU accelerator options: low, medium, high
   version: 1.0.0
   contact:
-    name: AI Vision API Support
-    email: support@example.com
+    name: Mico GenAI services API Support
+    email: l.deron@mico-inc.com
   license:
     name: ISC
     url: https://opensource.org/licenses/ISC
@@ -46,18 +46,17 @@ servers:
     description: Production server (prd)
 
 tags:
-  - name: AI Vision
+  - name: Generative AI
     description: AI-powered image processing and generation endpoints
 
 paths:
   /aivision/autoBackgroundRemoval:
     post:
-      summary: Remove background from image
+      summary: Image - Auto background from removal
       description: |
         Automatically remove the background from an uploaded image using AI.
-        The service uses ComfyICU platform for background removal processing.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -98,7 +97,7 @@ paths:
                     result:
                       success: true
                       message: "Background removed successfully"
-                      data: ["https://s3.amazonaws.com/bucket/processed/background-removed-12345.png"]
+                      data: ["https://s3.amazonaws.com/bucket/auto-background-removal/processed-12345.png"]
         '400':
           description: Bad request - missing or invalid file
           content:
@@ -139,7 +138,7 @@ paths:
         Extract objects from an image using either bounding boxes or point selection.
         Supports both object extraction (with bounding boxes) and object segmentation (with points).
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -201,7 +200,7 @@ paths:
                     result:
                       success: true
                       message: "Objects extracted successfully"
-                      data: ["https://s3.amazonaws.com/bucket/extracted/object-12345.png"]
+                      data: ["https://s3.amazonaws.com/bucket/objects-extraction/extracted-12345.png"]
         '400':
           description: Bad request - missing file or invalid parameters
           content:
@@ -253,9 +252,8 @@ paths:
       summary: Generate human images
       description: |
         Generate photorealistic human images from text prompts using AI.
-        The service automatically translates prompts to English and optimizes them for human face generation.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -309,9 +307,9 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result: [
-                      "https://s3.amazonaws.com/bucket/generated/human-1-12345.png",
-                      "https://s3.amazonaws.com/bucket/generated/human-2-12345.png",
-                      "https://s3.amazonaws.com/bucket/generated/human-3-12345.png"
+                      "https://s3.amazonaws.com/bucket/human-generation/generated-1-12345.png",
+                      "https://s3.amazonaws.com/bucket/human-generation/generated-2-12345.png",
+                      "https://s3.amazonaws.com/bucket/human-generation/generated-3-12345.png"
                     ]
         '400':
           description: Bad request - missing prompt or invalid parameters
@@ -348,12 +346,12 @@ paths:
 
   /aivision/stockPhotoGeneration:
     post:
-      summary: Generate stock photo style images
+      summary: Generate stock photo images
       description: |
         Generate stock photo style images from text prompts using AI.
         Supports prompt enhancement with OpenAI for better results.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -410,9 +408,9 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result: [
-                      "https://s3.amazonaws.com/bucket/generated/stock-1-12345.png",
-                      "https://s3.amazonaws.com/bucket/generated/stock-2-12345.png",
-                      "https://s3.amazonaws.com/bucket/generated/stock-3-12345.png"
+                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-1-12345.png",
+                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-2-12345.png",
+                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-3-12345.png"
                     ]
         '400':
           description: Bad request - missing prompt or invalid parameters
@@ -454,7 +452,7 @@ paths:
         Extend an image beyond its original boundaries using AI outpainting.
         Supports Mico (ComfyICU), Flux, and OpenAI services for processing.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -551,7 +549,7 @@ paths:
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/outpainted/landscape-extended-12345.png"]
+                    result: ["https://s3.amazonaws.com/bucket/image-outpainting/outpainted-12345.png"]
         '400':
           description: Bad request - missing file or invalid parameters
           content:
@@ -588,7 +586,7 @@ paths:
         For Flux and OpenAI services, only the original image and prompt are required.
         For Mico service, both original image and mask are required.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -664,7 +662,7 @@ paths:
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/inpainted/restored-photo-12345.png"]
+                    result: ["https://s3.amazonaws.com/bucket/image-inpainting/inpainted-12345.png"]
         '400':
           description: Bad request - missing files or invalid parameters
           content:
@@ -701,7 +699,7 @@ paths:
         For Flux and OpenAI services, only the original image and prompt are required.
         For Mico service, both original image and mask are required.
       tags:
-        - AI Vision
+        - Generative AI
       requestBody:
         required: true
         content:
@@ -777,7 +775,7 @@ paths:
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/removed/clean-photo-12345.png"]
+                    result: ["https://s3.amazonaws.com/bucket/image-inpainting-removal/removed-12345.png"]
         '400':
           description: Bad request - missing files or invalid parameters
           content:
