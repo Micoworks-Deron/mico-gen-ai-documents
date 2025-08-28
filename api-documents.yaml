@@ -447,7 +447,7 @@ paths:
 
   /aivision/imageOutpainting:
     post:
-      summary: Extend image boundaries
+      summary: Image Outpainting
       description: |
         Extend an image beyond its original boundaries using AI outpainting.
         Supports Mico (ComfyICU), Flux, and OpenAI services for processing.
@@ -579,7 +579,7 @@ paths:
 
   /aivision/imageInpainting:
     post:
-      summary: Fill missing parts of image
+      summary: (WIP)Fill missing parts of image
       description: |
         Fill in missing or damaged parts of an image using AI inpainting.
         Supports Mico (ComfyICU), Flux, and OpenAI services.
@@ -692,7 +692,7 @@ paths:
 
   /aivision/imageInpaintingRemoval:
     post:
-      summary: Remove objects using inpainting
+      summary: (WIP)Remove objects using inpainting
       description: |
         Remove objects from an image using AI inpainting techniques.
         Supports Mico (ComfyICU), Flux, and OpenAI services.
