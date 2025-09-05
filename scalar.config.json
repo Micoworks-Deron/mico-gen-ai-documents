@@ -1,7 +1,7 @@
 {
   "references": [
     {
-      "name": "AI Vision API",
+      "name": "Mico Gen AI API",
       "path": "api-documents.yaml"
     }
   ],
