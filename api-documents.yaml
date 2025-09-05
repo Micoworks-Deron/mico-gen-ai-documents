@@ -1,14 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Generative AI API
+  title: Mico GenAI API
   description: |
-    Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
+    Comprehensive AI Vision API for image processing and generation
     
     ## Features
     - **Background Removal**: Automatically remove backgrounds from images
     - **Object Extraction**: Extract objects using bounding boxes or point selection
-    - **Human Generation**: Generate photorealistic human images from text prompts
-    - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts
+    - **Human Generation**: Generate photorealistic human images from text prompts with detailed control options
+    - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts and detailed control options
     - **Image Outpainting**: Extend images beyond their original boundaries
     - **Image Inpainting**: Fill in missing or damaged parts of images
     - **Inpainting Removal**: Remove objects from images using AI inpainting
@@ -29,6 +29,31 @@ info:
     ## Rate Limits
     - Standard rate limiting applies
     - GPU accelerator options: low, medium, high
+    
+    ## Prompt Formats
+    The API supports two prompt formats for generation endpoints:
+    
+    ### String Format (Simple)
+    ```json
+    {
+      "prompt": "A beautiful woman in a garden"
+    }
+    ```
+    
+    ### JSON Format (Advanced)
+    ```json
+    {
+      "prompt": {
+        "text": "A beautiful woman in a garden",
+        "category": "illustration",
+        "style": "realistic photography",
+        "background": "natural garden setting",
+        "mood": "peaceful"
+      }
+    }
+    ```
+    
+    The JSON format allows for detailed control over image generation by combining multiple properties into a single, well-formatted prompt.
   version: 1.0.0
   contact:
     name: Mico GenAI services API Support
@@ -262,13 +287,27 @@ paths:
               $ref: '#/components/schemas/HumanGenerationRequest'
             examples:
               basic:
-                summary: Basic human generation
-                description: Generate a simple human portrait
+                summary: Basic human generation (string prompt)
+                description: Generate a simple human portrait using string prompt
                 value:
                   prompt: "A beautiful woman in a garden"
                   width: 1024
                   height: 768
                   batchSize: 3
+                  accelerator: "medium"
+              json_prompt:
+                summary: JSON prompt format
+                description: Generate a human portrait using detailed JSON prompt
+                value:
+                  prompt:
+                    text: "A young Japanese female in the building on a sunny day"
+                    category: "illustration"
+                    style: "Japanese Manga pop style"
+                    background: "urban cityscape"
+                    mood: "peaceful"
+                  width: 1024
+                  height: 1024
+                  batchSize: 2
                   accelerator: "medium"
               portrait:
                 summary: Professional portrait
@@ -360,8 +399,8 @@ paths:
               $ref: '#/components/schemas/StockPhotoGenerationRequest'
             examples:
               basic:
-                summary: Basic stock photo generation
-                description: Generate a simple stock photo
+                summary: Basic stock photo generation (string prompt)
+                description: Generate a simple stock photo using string prompt
                 value:
                   prompt: "A modern office workspace"
                   width: 1024
@@ -369,6 +408,22 @@ paths:
                   batchSize: 3
                   accelerator: "medium"
                   promptEnhancer: false
+              json_prompt:
+                summary: JSON prompt format
+                description: Generate a stock photo using detailed JSON prompt
+                value:
+                  prompt:
+                    text: "A modern office workspace"
+                    category: "business"
+                    style: "professional photography"
+                    background: "clean office environment"
+                    lighting: "natural daylight"
+                    mood: "productive"
+                  width: 1024
+                  height: 1024
+                  batchSize: 2
+                  accelerator: "medium"
+                  promptEnhancer: true
               enhanced:
                 summary: Enhanced prompt generation
                 description: Use OpenAI to enhance the prompt
@@ -447,12 +502,12 @@ paths:
 
   /aivision/imageOutpainting:
     post:
-      summary: Image Outpainting
+      summary: Extend image boundaries
       description: |
         Extend an image beyond its original boundaries using AI outpainting.
         Supports Mico (ComfyICU), Flux, and OpenAI services for processing.
       tags:
-        - Generative AI
+        - AI Vision
       requestBody:
         required: true
         content:
@@ -579,7 +634,7 @@ paths:
 
   /aivision/imageInpainting:
     post:
-      summary: (WIP)Fill missing parts of image
+      summary: Fill missing parts of image
       description: |
         Fill in missing or damaged parts of an image using AI inpainting.
         Supports Mico (ComfyICU), Flux, and OpenAI services.
@@ -692,14 +747,14 @@ paths:
 
   /aivision/imageInpaintingRemoval:
     post:
-      summary: (WIP)Remove objects using inpainting
+      summary: Remove objects using inpainting
       description: |
         Remove objects from an image using AI inpainting techniques.
         Supports Mico (ComfyICU), Flux, and OpenAI services.
         For Flux and OpenAI services, only the original image and prompt are required.
         For Mico service, both original image and mask are required.
       tags:
-        - Generative AI
+        - AI Vision
       requestBody:
         required: true
         content:
@@ -844,6 +899,52 @@ components:
         - message
         - result
 
+    PromptData:
+      type: object
+      description: |
+        JSON prompt object that allows for detailed control over image generation.
+        The 'text' property is required, while all other properties are optional and will be
+        automatically combined into the final prompt.
+      properties:
+        text:
+          type: string
+          description: Main text description for the image generation
+          example: "A young Japanese female in the building on a sunny day"
+          minLength: 1
+        category:
+          type: string
+          description: Image category (e.g., illustration, photography, art)
+          example: "illustration"
+        style:
+          type: string
+          description: Visual style of the image
+          example: "Japanese Manga pop style"
+        background:
+          type: string
+          description: Background description
+          example: "urban cityscape"
+        mood:
+          type: string
+          description: Mood or atmosphere of the image
+          example: "peaceful"
+        lighting:
+          type: string
+          description: Lighting conditions
+          example: "soft natural light"
+        composition:
+          type: string
+          description: Composition style
+          example: "close-up portrait"
+      required:
+        - text
+      additionalProperties: true
+      example:
+        text: "A young Japanese female in the building on a sunny day"
+        category: "illustration"
+        style: "Japanese Manga pop style"
+        background: "urban cityscape"
+        mood: "peaceful"
+
     ErrorResponse:
       type: object
       properties:
@@ -867,10 +968,15 @@ components:
       type: object
       properties:
         prompt:
-          type: string
-          description: Text prompt describing the human to generate
-          example: "A beautiful woman in a garden"
-          minLength: 1
+          oneOf:
+            - type: string
+              description: Text prompt describing the human to generate
+              example: "A beautiful woman in a garden"
+              minLength: 1
+            - $ref: '#/components/schemas/PromptData'
+          description: |
+            Prompt for human generation. Can be a simple string or a JSON object with additional properties.
+            The JSON format allows for more detailed control over the generation process.
         width:
           type: integer
           description: Image width in pixels
@@ -905,10 +1011,15 @@ components:
       type: object
       properties:
         prompt:
-          type: string
-          description: Text prompt describing the stock photo to generate
-          example: "A modern office workspace"
-          minLength: 1
+          oneOf:
+            - type: string
+              description: Text prompt describing the stock photo to generate
+              example: "A modern office workspace"
+              minLength: 1
+            - $ref: '#/components/schemas/PromptData'
+          description: |
+            Prompt for stock photo generation. Can be a simple string or a JSON object with additional properties.
+            The JSON format allows for more detailed control over the generation process.
         width:
           type: integer
           description: Image width in pixels
