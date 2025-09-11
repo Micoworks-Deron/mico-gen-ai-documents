@@ -1,20 +1,15 @@
 openapi: 3.0.3
 info:
-  title: Mico GenAI API
+  title: Mico Gen AI API
   description: |
-    Comprehensive AI Vision API for image processing and generation
+    Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
     
     ## Features
     - **Background Removal**: Automatically remove backgrounds from images
     - **Object Extraction**: Extract objects using bounding boxes or point selection
     - **Human Generation**: Generate photorealistic human images from text prompts with detailed control options
     - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts and detailed control options
-    - **Image Outpainting**: Extend images beyond their original boundaries
-    - **Image Inpainting**: Fill in missing or damaged parts of images
     - **Inpainting Removal**: Remove objects from images using AI inpainting
-    
-    ## Authentication
-    Currently, authentication is disabled for local development. In production, JWT authentication will be required.
     
     ## File Upload Limits
     - Maximum file size: 35MB
@@ -22,7 +17,7 @@ info:
     - Maximum files per request: 10
     
     ## Services
-    - **Mico (ComfyICU)**: Primary AI service for most operations
+    - **Mico**: Primary AI service for most operations
     - **Flux**: Alternative service for inpainting and outpainting
     - **OpenAI**: Advanced service for inpainting and outpainting
     
@@ -30,30 +25,21 @@ info:
     - Standard rate limiting applies
     - GPU accelerator options: low, medium, high
     
-    ## Prompt Formats
-    The API supports two prompt formats for generation endpoints:
-    
-    ### String Format (Simple)
-    ```json
-    {
-      "prompt": "A beautiful woman in a garden"
-    }
-    ```
-    
-    ### JSON Format (Advanced)
+    ## Prompt Formats for grnerating images 
+    ### JSON Format
     ```json
     {
       "prompt": {
         "text": "A beautiful woman in a garden",
         "category": "illustration",
         "style": "realistic photography",
-        "background": "natural garden setting",
-        "mood": "peaceful"
+        ...
       }
     }
     ```
     
-    The JSON format allows for detailed control over image generation by combining multiple properties into a single, well-formatted prompt.
+    The JSON format allows for detailed control over image generation by combining multiple properties into a single, well-formatted prompt. The `text` property is optional and can be empty, allowing for metadata-only prompts.
+  
   version: 1.0.0
   contact:
     name: Mico GenAI services API Support
@@ -332,6 +318,20 @@ paths:
                 description: Use only required parameters with defaults
                 value:
                   prompt: "A happy person"
+              metadata_only:
+                summary: Metadata-only prompt
+                description: Generate using only metadata properties without text
+                value:
+                  prompt:
+                    text: ""
+                    category: "illustration"
+                    style: "Japanese Manga pop style"
+                    background: "urban cityscape"
+                    mood: "peaceful"
+                  width: 1024
+                  height: 1024
+                  batchSize: 1
+                  accelerator: "medium"
       responses:
         '200':
           description: Human images generated successfully
@@ -449,6 +449,22 @@ paths:
                 description: Use only required parameters with defaults
                 value:
                   prompt: "A coffee cup on a desk"
+              metadata_only:
+                summary: Metadata-only prompt
+                description: Generate using only metadata properties without text
+                value:
+                  prompt:
+                    text: ""
+                    category: "business"
+                    style: "professional photography"
+                    background: "clean office environment"
+                    lighting: "natural daylight"
+                    mood: "productive"
+                  width: 1024
+                  height: 1024
+                  batchSize: 1
+                  accelerator: "medium"
+                  promptEnhancer: false
       responses:
         '200':
           description: Stock photos generated successfully
@@ -844,6 +860,80 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
+
+  /aivision/imageVariationsRecommendation:
+    post:
+      summary: Image variations recommendation
+      description: |
+        Analyze an uploaded advertisement image and return the top 3-5 most impactful design change suggestions to improve ROI and CTA.
+        Simplified to accept only the image file and optional tenant information.
+      tags:
+        - Generative AI
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to analyze (JPEG, PNG, WebP, max 35MB)
+                tenantInformation:
+                  type: string
+                  description: Property type or industry context (e.g., real estate, commercial, residential). Defaults to general property.
+              required:
+                - file
+            examples:
+              basic:
+                summary: Recommend variations for an ad image
+                value:
+                  file: "ad_popup.jpg"
+                  tenantInformation: "real estate"
+              commercial:
+                summary: Commercial property ad
+                value:
+                  file: "commercial_ad.jpg"
+                  tenantInformation: "commercial property"
+              residential:
+                summary: Residential property ad
+                value:
+                  file: "residential_ad.jpg"
+                  tenantInformation: "residential property"
+      responses:
+        '200':
+          description: Recommendations generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                success:
+                  summary: Successful recommendation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result: [
+                      "Change the CTA button to high-contrast color matching brand palette.",
+                      "Replace the background gradient with a cleaner, brighter tone for readability.",
+                      "Change headline font color to increase contrast vs. background.",
+                      "Add more white space around the main content for better visual hierarchy.",
+                      "Update the image layer with more vibrant colors to increase engagement."
+                    ]
+        '400':
+          description: Bad request - missing or invalid file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_file:
+                  summary: Missing file
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
         '500':
           description: Internal server error
           content:
@@ -903,14 +993,14 @@ components:
       type: object
       description: |
         JSON prompt object that allows for detailed control over image generation.
-        The 'text' property is required, while all other properties are optional and will be
+        The 'text' property is optional and can be empty, while all other properties are optional and will be
         automatically combined into the final prompt.
       properties:
         text:
           type: string
-          description: Main text description for the image generation
+          description: Main text description for the image generation (optional)
           example: "A young Japanese female in the building on a sunny day"
-          minLength: 1
+          minLength: 0
         category:
           type: string
           description: Image category (e.g., illustration, photography, art)
@@ -935,11 +1025,9 @@ components:
           type: string
           description: Composition style
           example: "close-up portrait"
-      required:
-        - text
       additionalProperties: true
       example:
-        text: "A young Japanese female in the building on a sunny day"
+        text: ""
         category: "illustration"
         style: "Japanese Manga pop style"
         background: "urban cityscape"
@@ -972,11 +1060,12 @@ components:
             - type: string
               description: Text prompt describing the human to generate
               example: "A beautiful woman in a garden"
-              minLength: 1
+              minLength: 0
             - $ref: '#/components/schemas/PromptData'
           description: |
             Prompt for human generation. Can be a simple string or a JSON object with additional properties.
             The JSON format allows for more detailed control over the generation process.
+            The text property in PromptData is optional and can be empty.
         width:
           type: integer
           description: Image width in pixels
@@ -1015,11 +1104,12 @@ components:
             - type: string
               description: Text prompt describing the stock photo to generate
               example: "A modern office workspace"
-              minLength: 1
+              minLength: 0
             - $ref: '#/components/schemas/PromptData'
           description: |
             Prompt for stock photo generation. Can be a simple string or a JSON object with additional properties.
             The JSON format allows for more detailed control over the generation process.
+            The text property in PromptData is optional and can be empty.
         width:
           type: integer
           description: Image width in pixels
