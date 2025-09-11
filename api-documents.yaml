@@ -272,15 +272,6 @@ paths:
             schema:
               $ref: '#/components/schemas/HumanGenerationRequest'
             examples:
-              basic:
-                summary: Basic human generation (string prompt)
-                description: Generate a simple human portrait using string prompt
-                value:
-                  prompt: "A beautiful woman in a garden"
-                  width: 1024
-                  height: 768
-                  batchSize: 3
-                  accelerator: "medium"
               json_prompt:
                 summary: JSON prompt format
                 description: Generate a human portrait using detailed JSON prompt
@@ -294,43 +285,6 @@ paths:
                   width: 1024
                   height: 1024
                   batchSize: 2
-                  accelerator: "medium"
-              portrait:
-                summary: Professional portrait
-                description: Generate a professional headshot
-                value:
-                  prompt: "Professional headshot of a confident businesswoman"
-                  width: 1024
-                  height: 1024
-                  batchSize: 1
-                  accelerator: "high"
-              casual:
-                summary: Casual portrait
-                description: Generate a casual, friendly portrait
-                value:
-                  prompt: "A young man with a friendly smile in casual clothing"
-                  width: 768
-                  height: 1024
-                  batchSize: 2
-                  accelerator: "medium"
-              minimal:
-                summary: Minimal parameters
-                description: Use only required parameters with defaults
-                value:
-                  prompt: "A happy person"
-              metadata_only:
-                summary: Metadata-only prompt
-                description: Generate using only metadata properties without text
-                value:
-                  prompt:
-                    text: ""
-                    category: "illustration"
-                    style: "Japanese Manga pop style"
-                    background: "urban cityscape"
-                    mood: "peaceful"
-                  width: 1024
-                  height: 1024
-                  batchSize: 1
                   accelerator: "medium"
       responses:
         '200':
@@ -388,7 +342,6 @@ paths:
       summary: Generate stock photo images
       description: |
         Generate stock photo style images from text prompts using AI.
-        Supports prompt enhancement with OpenAI for better results.
       tags:
         - Generative AI
       requestBody:
@@ -398,16 +351,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StockPhotoGenerationRequest'
             examples:
-              basic:
-                summary: Basic stock photo generation (string prompt)
-                description: Generate a simple stock photo using string prompt
-                value:
-                  prompt: "A modern office workspace"
-                  width: 1024
-                  height: 1024
-                  batchSize: 3
-                  accelerator: "medium"
-                  promptEnhancer: false
               json_prompt:
                 summary: JSON prompt format
                 description: Generate a stock photo using detailed JSON prompt
@@ -422,47 +365,6 @@ paths:
                   width: 1024
                   height: 1024
                   batchSize: 2
-                  accelerator: "medium"
-                  promptEnhancer: true
-              enhanced:
-                summary: Enhanced prompt generation
-                description: Use OpenAI to enhance the prompt
-                value:
-                  prompt: "A business meeting"
-                  width: 1024
-                  height: 1024
-                  batchSize: 2
-                  accelerator: "high"
-                  promptEnhancer: true
-              landscape:
-                summary: Landscape stock photo
-                description: Generate a landscape stock photo
-                value:
-                  prompt: "A beautiful sunset over mountains"
-                  width: 1024
-                  height: 768
-                  batchSize: 1
-                  accelerator: "medium"
-                  promptEnhancer: false
-              minimal:
-                summary: Minimal parameters
-                description: Use only required parameters with defaults
-                value:
-                  prompt: "A coffee cup on a desk"
-              metadata_only:
-                summary: Metadata-only prompt
-                description: Generate using only metadata properties without text
-                value:
-                  prompt:
-                    text: ""
-                    category: "business"
-                    style: "professional photography"
-                    background: "clean office environment"
-                    lighting: "natural daylight"
-                    mood: "productive"
-                  width: 1024
-                  height: 1024
-                  batchSize: 1
                   accelerator: "medium"
                   promptEnhancer: false
       responses:
