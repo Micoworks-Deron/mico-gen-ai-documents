@@ -470,15 +470,6 @@ paths:
             schema:
               $ref: '#/components/schemas/HumanGenerationRequest'
             examples:
-              basic:
-                summary: Basic human generation (string prompt)
-                description: Generate a simple human portrait using string prompt
-                value:
-                  prompt: "A beautiful woman in a garden"
-                  width: 1024
-                  height: 768
-                  batchSize: 3
-                  accelerator: "medium"
               json_prompt:
                 summary: JSON prompt format
                 description: Generate a human portrait using detailed JSON prompt
@@ -493,29 +484,6 @@ paths:
                   height: 1024
                   batchSize: 2
                   accelerator: "medium"
-              portrait:
-                summary: Professional portrait
-                description: Generate a professional headshot
-                value:
-                  prompt: "Professional headshot of a confident businesswoman"
-                  width: 1024
-                  height: 1024
-                  batchSize: 1
-                  accelerator: "high"
-              casual:
-                summary: Casual portrait
-                description: Generate a casual, friendly portrait
-                value:
-                  prompt: "A young man with a friendly smile in casual clothing"
-                  width: 768
-                  height: 1024
-                  batchSize: 2
-                  accelerator: "medium"
-              minimal:
-                summary: Minimal parameters
-                description: Use only required parameters with defaults
-                value:
-                  prompt: "A happy person"
       responses:
         '200':
           description: Human images generated successfully
@@ -605,16 +573,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StockPhotoGenerationRequest'
             examples:
-              basic:
-                summary: Basic stock photo generation (string prompt)
-                description: Generate a simple stock photo using string prompt
-                value:
-                  prompt: "A modern office workspace"
-                  width: 1024
-                  height: 1024
-                  batchSize: 3
-                  accelerator: "medium"
-                  promptEnhancer: false
               json_prompt:
                 summary: JSON prompt format
                 description: Generate a stock photo using detailed JSON prompt
@@ -631,31 +589,6 @@ paths:
                   batchSize: 2
                   accelerator: "medium"
                   promptEnhancer: true
-              enhanced:
-                summary: Enhanced prompt generation
-                description: Use OpenAI to enhance the prompt
-                value:
-                  prompt: "A business meeting"
-                  width: 1024
-                  height: 1024
-                  batchSize: 2
-                  accelerator: "high"
-                  promptEnhancer: true
-              landscape:
-                summary: Landscape stock photo
-                description: Generate a landscape stock photo
-                value:
-                  prompt: "A beautiful sunset over mountains"
-                  width: 1024
-                  height: 768
-                  batchSize: 1
-                  accelerator: "medium"
-                  promptEnhancer: false
-              minimal:
-                summary: Minimal parameters
-                description: Use only required parameters with defaults
-                value:
-                  prompt: "A coffee cup on a desk"
       responses:
         '200':
           description: Stock photos generated successfully
