@@ -1,0 +1,73 @@
+---
+id: extract-objects-from-image
+title: "Extract objects from image"
+description: "Extract objects from an image using either bounding boxes or point selection."
+sidebar_label: "Extract objects from image"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: docs/mico-gen-ai/generative-ai-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Extract objects from image"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/aivision/objectsExtraction"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Extract objects from an image using either bounding boxes or point selection.
+Supports both object extraction (with bounding boxes) and object segmentation (with points).
+
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","properties":{"file":{"type":"string","format":"binary","description":"Image file to process (JPEG, PNG, WebP, max 35MB)"},"bboxes":{"type":"string","description":"JSON array of bounding boxes for object extraction.\nFormat: [{\"startX\": 0, \"startY\": 0, \"endX\": 100, \"endY\": 100}]\n"},"points":{"type":"string","description":"JSON object with positive and negative points for segmentation.\nFormat: {\"positive\": [{\"x\": 100, \"y\": 100}], \"negative\": [{\"x\": 0, \"y\": 0}]}\n"}},"required":["file"],"oneOf":[{"required":["bboxes"]},{"required":["points"]}]},"examples":{"bounding_boxes":{"summary":"Extract using bounding boxes","description":"Extract objects using precise bounding box coordinates","value":{"file":"scene.jpg","bboxes":"[{\"startX\": 100, \"startY\": 150, \"endX\": 300, \"endY\": 400}, {\"startX\": 500, \"startY\": 200, \"endX\": 700, \"endY\": 450}]"}},"single_object":{"summary":"Extract single object with bounding box","description":"Extract one object using a single bounding box","value":{"file":"portrait.jpg","bboxes":"[{\"startX\": 50, \"startY\": 50, \"endX\": 250, \"endY\": 350}]"}},"points_segmentation":{"summary":"Extract using points","description":"Use point selection for precise object segmentation","value":{"file":"complex_scene.jpg","points":"{\"positive\": [{\"x\": 150, \"y\": 200}, {\"x\": 160, \"y\": 210}], \"negative\": [{\"x\": 0, \"y\": 0}, {\"x\": 800, \"y\": 600}]}"}}}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Objects extracted successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":200},"message":{"type":"string","description":"Response message","example":"SUCCESS"},"result":{"oneOf":[{"type":"object","properties":{"success":{"type":"boolean","description":"Operation success status","example":true},"message":{"type":"string","description":"Operation message","example":"Background removed successfully"},"data":{"type":"array","items":{"type":"string"},"description":"Array of result URLs","example":["https://s3.amazonaws.com/bucket/processed/image-12345.png"]}}},{"type":"array","items":{"type":"string"},"description":"Array of result URLs","example":["https://s3.amazonaws.com/bucket/generated/image-1.png","https://s3.amazonaws.com/bucket/generated/image-2.png"]}]}},"required":["status_code","message","result"],"title":"SuccessResponse"},"examples":{"success":{"summary":"Successful object extraction","value":{"status_code":200,"message":"SUCCESS","result":{"success":true,"message":"Objects extracted successfully","data":["https://s3.amazonaws.com/bucket/objects-extraction/extracted-12345.png"]}}}}}}},"400":{"description":"Bad request - missing file or invalid parameters","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"missing_file":{"summary":"Missing file error","value":{"status_code":400,"message":"BAD_REQUEST","result":null}},"missing_parameters":{"summary":"Missing bboxes or points","value":{"status_code":400,"message":"BAD_REQUEST","result":null}}}}}},"401":{"description":"Unauthorized - invalid or missing authentication","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"missing_auth":{"summary":"Missing authorization header","value":{"status_code":401,"message":"UNAUTHORIZED","result":null,"error":"Authorization header is required"}},"invalid_token":{"summary":"Invalid token","value":{"status_code":401,"message":"UNAUTHORIZED","result":null,"error":"Invalid or expired Bearer token"}}}}}},"422":{"description":"Unprocessable entity - invalid JSON format","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"invalid_json":{"summary":"Invalid JSON format","value":{"status_code":422,"message":"UNPROCESSABLE_ENTITY","result":null}}}}}},"500":{"description":"Internal server error","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"server_error":{"summary":"Internal server error","value":{"status_code":500,"message":"INTERNAL_SERVER_ERROR","result":null}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
