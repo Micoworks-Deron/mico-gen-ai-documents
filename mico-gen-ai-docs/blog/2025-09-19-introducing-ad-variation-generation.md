@@ -44,17 +44,33 @@ _Starting point: Original recruitment ad for Tohoku area jobs_
 
 #### Full Ad Refinement Comparison
 
-| Autopilot Mode                                                                          | Manual Mode                                                                           |
-| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| ![Ad refined by autopilot mode with orange theme](/img/blog/ad-variation-autopilot.png) | ![Ad refined by manual mode showing female worker](/img/blog/ad-variation-manual.png) |
-| _AI automatically optimized colors and visual elements_                                 | _Custom prompt: Change from male to female_                                           |
+<div style={{display: 'flex', gap: '40px', marginBottom: '40px'}}>
+  <div style={{flex: 1}}>
+    <strong>Autopilot Mode</strong><br/>
+    <img src="/img/blog/ad-variation-autopilot.png" alt="Ad refined by autopilot mode with orange theme" style={{width: '100%'}} /><br/>
+    <em>AI automatically optimized colors and visual elements</em>
+  </div>
+  <div style={{flex: 1}}>
+    <strong>Manual Mode</strong><br/>
+    <img src="/img/blog/ad-variation-manual.png" alt="Ad refined by manual mode showing female worker" style={{width: '100%'}} /><br/>
+    <em>Custom prompt: Change from male to female</em>
+  </div>
+</div>
 
 #### Single Layer Refinement Comparison
 
-| Autopilot Mode                                                                      | Manual Mode                                                                        |
-| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| ![Single layer refinement by autopilot mode](/img/blog/ad-variation-layer-auto.png) | ![Single layer refinement by manual mode](/img/blog/ad-variation-layer-manual.png) |
-| _AI automatically optimized colors and visual elements_                             | _Custom prompt: Change from male to female_                                        |
+<div style={{display: 'flex', gap: '40px', marginBottom: '40px'}}>
+  <div style={{flex: 1}}>
+    <strong>Autopilot Mode</strong><br/>
+    <img src="/img/blog/ad-variation-layer-auto.png" alt="Single layer refinement by autopilot mode" style={{width: '100%'}} /><br/>
+    <em>Focused optimization of specific elements</em>
+  </div>
+  <div style={{flex: 1}}>
+    <strong>Manual Mode</strong><br/>
+    <img src="/img/blog/ad-variation-layer-manual.png" alt="Single layer refinement by manual mode" style={{width: '100%'}} /><br/>
+    <em>Targeted changes to specific components</em>
+  </div>
+</div>
 
 This example demonstrates:
 
