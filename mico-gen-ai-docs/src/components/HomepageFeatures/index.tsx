@@ -11,32 +11,31 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'AI Image Generation',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Generate photorealistic human images and stock photos with detailed control options.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Advanced Image Processing',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Remove backgrounds, extract objects, and perform inpainting/outpainting operations.
+        Process up to 35MB files with support for JPEG, PNG, and WebP formats.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Developer-First API',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        RESTful API with comprehensive documentation, SDKs, and examples.
+        Bearer token authentication with flexible rate limiting and GPU acceleration.
       </>
     ),
   },

@@ -20,8 +20,13 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            to="/docs/developers/getting-started">
+            Get Started
+          </Link>
+          <Link
+            className="button button--outline button--lg"
+            to="/docs/developers/mico-gen-ai/introduction">
+            View API Docs
           </Link>
         </div>
       </div>
@@ -33,8 +38,8 @@ export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title} - AI Vision API`}
+      description="Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

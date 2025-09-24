@@ -4,51 +4,51 @@ const sidebar: SidebarsConfig = {
   apisidebar: [
     {
       type: "doc",
-      id: "mico-gen-ai/generative-ai-api",
+      id: "api",
     },
     {
       type: "category",
-      label: "Generative AI",
+      label: "Mico Gen AI",
       items: [
         {
           type: "doc",
-          id: "mico-gen-ai/ad-variation-generation",
+          id: "ad-variation-generation",
           label: "Ad Variation Generation",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/image-auto-background-from-removal",
-          label: "Image - Auto background from removal",
+          id: "auto-background-removal",
+          label: "Auto background removal",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/extract-objects-from-image",
+          id: "extract-objects-from-image",
           label: "Extract objects from image",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/generate-human-images",
+          id: "generate-human-images",
           label: "Generate human images",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/generate-stock-photo-images",
+          id: "generate-stock-photo-images",
           label: "Generate stock photo images",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/fill-missing-parts-of-image",
+          id: "fill-missing-parts-of-image",
           label: "Fill missing parts of image",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/image-variations-recommendation",
+          id: "image-variations-recommendation",
           label: "Image variations recommendation",
           className: "api-method post",
         },
@@ -60,13 +60,13 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "mico-gen-ai/extend-image-boundaries",
+          id: "extend-image-boundaries",
           label: "Extend image boundaries",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "mico-gen-ai/remove-objects-using-inpainting",
+          id: "remove-objects-using-inpainting",
           label: "Remove objects using inpainting",
           className: "api-method post",
         },

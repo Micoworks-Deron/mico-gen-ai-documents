@@ -7,8 +7,8 @@ import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: "Mico Gen AI Documentation",
-  // tagline: "Dinosaurs are cool",
+  title: "Mico Gen AI",
+  tagline: "Comprehensive AI Vision API for image processing and generation",
   favicon: "img/favicon.ico",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -24,8 +24,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "mico", // Usually your GitHub org/user name.
+  projectName: "mico-gen-ai-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -35,7 +35,7 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en", "ja"],
   },
 
   presets: [
@@ -45,6 +45,7 @@ const config: Config = {
         docs: {
           sidebarPath: "./sidebars.ts",
           docItemComponent: "@theme/ApiItem", // Derived from docusaurus-theme-openapi
+          routeBasePath: "docs/developers",
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -64,63 +65,64 @@ const config: Config = {
       },
       items: [
         {
-          type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          type: "dropdown",
+          label: "Developers",
           position: "left",
-          label: "Tutorial",
+          items: [
+            {
+              label: "API Documentation",
+              to: "/docs/developers/mico-gen-ai/introduction",
+            },
+            {
+              label: "Getting Started",
+              to: "/docs/developers/getting-started",
+            },
+          ],
         },
-        { to: "/blog", label: "Blog", position: "left" },
-        // {
-        //   href: "https://github.com/facebook/docusaurus",
-        //   label: "GitHub",
-        //   position: "right",
-        // },
+        {
+          type: "dropdown",
+          label: "Resources",
+          position: "left",
+          items: [
+            {
+              label: "Blog",
+              to: "/blog",
+            },
+          ],
+        },
+        {
+          type: "localeDropdown",
+          position: "right",
+        },
       ],
     },
     footer: {
       style: "dark",
       links: [
         {
-          title: "Docs",
+          title: "Developers",
           items: [
             {
-              label: "Tutorial",
-              to: "/docs/intro",
+              label: "API Documentation",
+              to: "/docs/developers/mico-gen-ai/introduction",
+            },
+            {
+              label: "Getting Started",
+              to: "/docs/developers/getting-started",
             },
           ],
         },
         {
-          title: "Community",
-          items: [
-            {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            },
-            {
-              label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
-            {
-              label: "X",
-              href: "https://x.com/docusaurus",
-            },
-          ],
-        },
-        {
-          title: "More",
+          title: "Resources",
           items: [
             {
               label: "Blog",
               to: "/blog",
             },
-            {
-              label: "GitHub",
-              href: "https://github.com/facebook/docusaurus",
-            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Mico Gen AI. All rights reserved.`,
     },
     prism: {
       theme: prismThemes.github,
@@ -135,7 +137,7 @@ const config: Config = {
         id: "api", // plugin id
         docsPluginId: "classic", // configured for preset-classic
         config: {
-          petstore: {
+          micoGenAI: {
             specPath: "api-documents.yaml",
             outputDir: "docs/mico-gen-ai", // output to docs dir so that it's processed by docs plugin
             sidebarOptions: {
