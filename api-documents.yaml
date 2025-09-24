@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: Generative AI API
+  title: Mico Gen AI API
   description: |
     Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
-    
+
     ## Features
     - **Background Removal**: Automatically remove backgrounds from images
     - **Object Extraction**: Extract objects using bounding boxes or point selection
@@ -14,42 +14,42 @@ info:
     - **Inpainting Removal**: Remove objects from images using AI inpainting
     - **Ad Variation**: Generate ad variations with manual prompts or automatic analysis mode
     - **Image Variations Recommendation**: Get AI-powered recommendations for image variations
-    
+
     ## Authentication
     All `/aivision/*` endpoints require authentication using one of the following methods:
-    
+
     ### Bearer Token Authentication
     Use your API key with Bearer format:
     ```
     Authorization: Bearer YOUR_API_KEY
     ```
-    
+
     **Note**: `/health` and `/documentation` endpoints are publicly accessible and do not require authentication.
-    
+
     ## File Upload Limits
     - Maximum file size: 35MB
     - Supported formats: JPEG, PNG, WebP
     - Maximum files per request: 10
-    
+
     ## Services
     - **Mico (ComfyICU)**: Primary AI service for most operations
     - **Flux**: Alternative service for inpainting and outpainting
     - **OpenAI**: Advanced service for inpainting and outpainting
-    
+
     ## Rate Limits
     - Standard rate limiting applies
     - GPU accelerator options: low, medium, high
-    
+
     ## Prompt Formats
     The API supports two prompt formats for generation endpoints:
-    
+
     ### String Format (Simple)
     ```json
     {
       "prompt": "A beautiful woman in a garden"
     }
     ```
-    
+
     ### JSON Format (Advanced)
     ```json
     {
@@ -62,7 +62,7 @@ info:
       }
     }
     ```
-    
+
     ### JSON Format (Metadata Only)
     ```json
     {
@@ -75,7 +75,7 @@ info:
       }
     }
     ```
-    
+
     The JSON format allows for detailed control over image generation by combining multiple properties into a single, well-formatted prompt. The `text` property is optional and can be empty, allowing for metadata-only prompts.
   version: 1.0.0
   contact:
@@ -94,7 +94,7 @@ servers:
     description: Production server (prd)
 
 tags:
-  - name: Generative AI
+  - name: Mico Gen AI
     description: AI-powered image processing and generation endpoints
   - name: Authentication
     description: Authentication and token management endpoints
@@ -106,7 +106,7 @@ paths:
       description: |
         Generate ad variations with manual prompts or automatic analysis mode. Supports multiple models including Gemini, Flux, and other AI services.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -144,12 +144,12 @@ paths:
                   type: string
                   description: Additional metadata for the request
       responses:
-        '200':
+        "200":
           description: Ad variation generated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful ad variation generation
@@ -162,12 +162,12 @@ paths:
                         model_used: "gemini"
                         mode: "manual"
                         processing_time: "2.5s"
-        '400':
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 bad_request:
                   summary: Invalid request parameters
@@ -176,12 +176,12 @@ paths:
                     message: "BAD_REQUEST"
                     result: null
                     error: "Missing required field: mode"
-        '401':
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -197,12 +197,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -217,7 +217,7 @@ paths:
       description: |
         Automatically remove the background from an uploaded image using AI.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -245,12 +245,12 @@ paths:
                 value:
                   file: "product.png"
       responses:
-        '200':
+        "200":
           description: Background removed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful background removal
@@ -260,13 +260,16 @@ paths:
                     result:
                       success: true
                       message: "Background removed successfully"
-                      data: ["https://s3.amazonaws.com/bucket/auto-background-removal/processed-12345.png"]
-        '400':
+                      data:
+                        [
+                          "https://s3.amazonaws.com/bucket/auto-background-removal/processed-12345.png",
+                        ]
+        "400":
           description: Bad request - missing or invalid file
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_file:
                   summary: Missing file error
@@ -280,12 +283,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -301,12 +304,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -322,7 +325,7 @@ paths:
         Extract objects from an image using either bounding boxes or point selection.
         Supports both object extraction (with bounding boxes) and object segmentation (with points).
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -371,12 +374,12 @@ paths:
                   file: "complex_scene.jpg"
                   points: '{"positive": [{"x": 150, "y": 200}, {"x": 160, "y": 210}], "negative": [{"x": 0, "y": 0}, {"x": 800, "y": 600}]}'
       responses:
-        '200':
+        "200":
           description: Objects extracted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful object extraction
@@ -386,13 +389,16 @@ paths:
                     result:
                       success: true
                       message: "Objects extracted successfully"
-                      data: ["https://s3.amazonaws.com/bucket/objects-extraction/extracted-12345.png"]
-        '400':
+                      data:
+                        [
+                          "https://s3.amazonaws.com/bucket/objects-extraction/extracted-12345.png",
+                        ]
+        "400":
           description: Bad request - missing file or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_file:
                   summary: Missing file error
@@ -406,12 +412,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -427,12 +433,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '422':
+        "422":
           description: Unprocessable entity - invalid JSON format
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 invalid_json:
                   summary: Invalid JSON format
@@ -440,12 +446,12 @@ paths:
                     status_code: 422
                     message: "UNPROCESSABLE_ENTITY"
                     result: null
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -460,7 +466,7 @@ paths:
       description: |
         Generate photorealistic human images from text prompts using AI.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -468,7 +474,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HumanGenerationRequest'
+              $ref: "#/components/schemas/HumanGenerationRequest"
             examples:
               json_prompt:
                 summary: JSON prompt format
@@ -485,29 +491,30 @@ paths:
                   batchSize: 2
                   accelerator: "medium"
       responses:
-        '200':
+        "200":
           description: Human images generated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful generation
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: [
-                      "https://s3.amazonaws.com/bucket/human-generation/generated-1-12345.png",
-                      "https://s3.amazonaws.com/bucket/human-generation/generated-2-12345.png",
-                      "https://s3.amazonaws.com/bucket/human-generation/generated-3-12345.png"
-                    ]
-        '400':
+                    result:
+                      [
+                        "https://s3.amazonaws.com/bucket/human-generation/generated-1-12345.png",
+                        "https://s3.amazonaws.com/bucket/human-generation/generated-2-12345.png",
+                        "https://s3.amazonaws.com/bucket/human-generation/generated-3-12345.png",
+                      ]
+        "400":
           description: Bad request - missing prompt or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_prompt:
                   summary: Missing prompt
@@ -521,12 +528,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -542,12 +549,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -563,7 +570,7 @@ paths:
         Generate stock photo style images from text prompts using AI.
         Supports prompt enhancement with OpenAI for better results.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -571,7 +578,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StockPhotoGenerationRequest'
+              $ref: "#/components/schemas/StockPhotoGenerationRequest"
             examples:
               json_prompt:
                 summary: JSON prompt format
@@ -590,29 +597,30 @@ paths:
                   accelerator: "medium"
                   promptEnhancer: true
       responses:
-        '200':
+        "200":
           description: Stock photos generated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful generation
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: [
-                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-1-12345.png",
-                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-2-12345.png",
-                      "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-3-12345.png"
-                    ]
-        '400':
+                    result:
+                      [
+                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-1-12345.png",
+                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-2-12345.png",
+                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-3-12345.png",
+                      ]
+        "400":
           description: Bad request - missing prompt or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_prompt:
                   summary: Missing prompt
@@ -626,12 +634,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -647,12 +655,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -755,25 +763,28 @@ paths:
                 value:
                   file: "photo.jpg"
       responses:
-        '200':
+        "200":
           description: Image outpainting completed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful outpainting
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/image-outpainting/outpainted-12345.png"]
-        '400':
+                    result:
+                      [
+                        "https://s3.amazonaws.com/bucket/image-outpainting/outpainted-12345.png",
+                      ]
+        "400":
           description: Bad request - missing file or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_file:
                   summary: Missing file
@@ -781,12 +792,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -802,12 +813,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -825,7 +836,7 @@ paths:
         For Flux and OpenAI services, only the original image and prompt are required.
         For Mico service, both original image and mask are required.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -891,25 +902,28 @@ paths:
                   accelerator: "high"
                   service: "mico"
       responses:
-        '200':
+        "200":
           description: Image inpainting completed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful inpainting
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/image-inpainting/inpainted-12345.png"]
-        '400':
+                    result:
+                      [
+                        "https://s3.amazonaws.com/bucket/image-inpainting/inpainted-12345.png",
+                      ]
+        "400":
           description: Bad request - missing files or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_files:
                   summary: Missing required files
@@ -917,12 +931,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -938,12 +952,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -1027,25 +1041,28 @@ paths:
                   accelerator: "high"
                   service: "mico"
       responses:
-        '200':
+        "200":
           description: Object removal completed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful object removal
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: ["https://s3.amazonaws.com/bucket/image-inpainting-removal/removed-12345.png"]
-        '400':
+                    result:
+                      [
+                        "https://s3.amazonaws.com/bucket/image-inpainting-removal/removed-12345.png",
+                      ]
+        "400":
           description: Bad request - missing files or invalid parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_files:
                   summary: Missing required files
@@ -1053,12 +1070,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -1081,7 +1098,7 @@ paths:
       description: |
         Analyze an uploaded advertisement image and return the top 3-5 most impactful design change suggestions to improve ROI and CTA.
       tags:
-        - Generative AI
+        - Mico Gen AI
       security:
         - BearerAuth: []
       requestBody:
@@ -1117,30 +1134,31 @@ paths:
                   file: "residential_ad.jpg"
                   tenant_information: "residential property"
       responses:
-        '200':
+        "200":
           description: Recommendations generated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
                   summary: Successful recommendation
                   value:
                     status_code: 200
                     message: "SUCCESS"
-                    result: [
-                      "Change the CTA button to high-contrast color matching brand palette.",
-                      "Replace the background gradient with a cleaner, brighter tone for readability.",
-                      "Change headline font color to increase contrast vs. background.",
-                      "Add more white space around the main content for better visual hierarchy."
-                    ]
-        '400':
+                    result:
+                      [
+                        "Change the CTA button to high-contrast color matching brand palette.",
+                        "Replace the background gradient with a cleaner, brighter tone for readability.",
+                        "Change headline font color to increase contrast vs. background.",
+                        "Add more white space around the main content for better visual hierarchy.",
+                      ]
+        "400":
           description: Bad request - missing or invalid file
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_file:
                   summary: Missing file
@@ -1148,12 +1166,12 @@ paths:
                     status_code: 400
                     message: "BAD_REQUEST"
                     result: null
-        '401':
+        "401":
           description: Unauthorized - invalid or missing authentication
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 missing_auth:
                   summary: Missing authorization header
@@ -1169,12 +1187,12 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 server_error:
                   summary: Internal server error
@@ -1192,7 +1210,7 @@ components:
       description: |
         Bearer token authentication. Supports two formats:
         1. Bearer with API key: `Authorization: Bearer YOUR_API_KEY`
-  
+
   schemas:
     SuccessResponse:
       type: object
@@ -1222,12 +1240,19 @@ components:
                   items:
                     type: string
                   description: Array of result URLs
-                  example: ["https://s3.amazonaws.com/bucket/processed/image-12345.png"]
+                  example:
+                    [
+                      "https://s3.amazonaws.com/bucket/processed/image-12345.png",
+                    ]
             - type: array
               items:
                 type: string
               description: Array of result URLs
-              example: ["https://s3.amazonaws.com/bucket/generated/image-1.png", "https://s3.amazonaws.com/bucket/generated/image-2.png"]
+              example:
+                [
+                  "https://s3.amazonaws.com/bucket/generated/image-1.png",
+                  "https://s3.amazonaws.com/bucket/generated/image-2.png",
+                ]
       required:
         - status_code
         - message
@@ -1305,7 +1330,7 @@ components:
               description: Text prompt describing the human to generate
               example: "A beautiful woman in a garden"
               minLength: 1
-            - $ref: '#/components/schemas/PromptData'
+            - $ref: "#/components/schemas/PromptData"
           description: |
             Prompt for human generation. Can be a simple string or a JSON object with additional properties.
             The JSON format allows for more detailed control over the generation process.
@@ -1348,7 +1373,7 @@ components:
               description: Text prompt describing the stock photo to generate
               example: "A modern office workspace"
               minLength: 1
-            - $ref: '#/components/schemas/PromptData'
+            - $ref: "#/components/schemas/PromptData"
           description: |
             Prompt for stock photo generation. Can be a simple string or a JSON object with additional properties.
             The JSON format allows for more detailed control over the generation process.
@@ -1456,4 +1481,4 @@ components:
           example: 128
 
 security:
-  - BearerAuth: [] 
+  - BearerAuth: []
