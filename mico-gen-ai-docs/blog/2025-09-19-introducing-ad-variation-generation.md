@@ -1,7 +1,7 @@
 ---
 slug: introducing-ad-variation-generation
 title: Introducing Ad Variation Generation - Transform Your Marketing Campaigns
-authors: [mico-team]
+authors: ["Mico Gen AI team"]
 tags: [ai, advertising, marketing, image-generation, automation]
 date: 2025-09-19
 ---
