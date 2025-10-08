@@ -1,19 +1,69 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+ai:
+  label: AI
+  permalink: /ai
+  description: Artificial Intelligence related posts
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+advertising:
+  label: Advertising
+  permalink: /advertising
+  description: Advertising and marketing automation posts
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+marketing:
+  label: Marketing
+  permalink: /marketing
+  description: Marketing technology and strategies
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+image-generation:
+  label: Image Generation
+  permalink: /image-generation
+  description: AI-powered image generation features
+
+automation:
+  label: Automation
+  permalink: /automation
+  description: Process automation and workflow improvements
+
+security:
+  label: Security
+  permalink: /security
+  description: Security and authentication updates
+
+aws:
+  label: AWS
+  permalink: /aws
+  description: Amazon Web Services integrations
+
+cognito:
+  label: Cognito
+  permalink: /cognito
+  description: AWS Cognito authentication
+
+authentication:
+  label: Authentication
+  permalink: /authentication
+  description: User authentication and authorization
+
+infrastructure:
+  label: Infrastructure
+  permalink: /infrastructure
+  description: Infrastructure and platform updates
+
+testing:
+  label: Testing
+  permalink: /testing
+  description: Testing results and quality assurance
+
+research:
+  label: Research
+  permalink: /research
+  description: Research and experiments
+
+experiments:
+  label: Experiments
+  permalink: /experiments
+  description: Experimental features and prototypes
+
+GIF:
+  label: GIF
+  permalink: /gif
+  description: GIF generation and animation features
