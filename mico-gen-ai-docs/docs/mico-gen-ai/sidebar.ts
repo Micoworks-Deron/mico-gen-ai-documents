@@ -52,6 +52,12 @@ const sidebar: SidebarsConfig = {
           label: "Image variations recommendation",
           className: "api-method post",
         },
+        {
+          type: "doc",
+          id: "image-to-video",
+          label: "Image to Video",
+          className: "api-method post",
+        },
       ],
     },
     {
