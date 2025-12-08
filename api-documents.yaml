@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Mico Gen AI API
+  title: Mico Gen AI
   description: |
-    Comprehensive AI Vision API for image processing and generation using ComfyICU, Flux, and OpenAI platforms.
+    Comprehensive AI Vision API for image processing and generation platforms.
 
     ## Features
     - **Background Removal**: Automatically remove backgrounds from images
@@ -14,6 +14,7 @@ info:
     - **Inpainting Removal**: Remove objects from images using AI inpainting
     - **Ad Variation**: Generate ad variations with manual prompts or automatic analysis mode
     - **Image Variations Recommendation**: Get AI-powered recommendations for image variations
+    - **Image to Video**: Convert an uploaded image to a video
 
     ## Authentication
     All `/aivision/*` endpoints require authentication using one of the following methods:
@@ -23,8 +24,6 @@ info:
     ```
     Authorization: Bearer YOUR_API_KEY
     ```
-
-    **Note**: `/health` and `/documentation` endpoints are publicly accessible and do not require authentication.
 
     ## File Upload Limits
     - Maximum file size: 35MB
@@ -213,7 +212,7 @@ paths:
 
   /aivision/autoBackgroundRemoval:
     post:
-      summary: Image - Auto background from removal
+      summary: Auto background removal
       description: |
         Automatically remove the background from an uploaded image using AI.
       tags:
@@ -1187,6 +1186,96 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Invalid or expired Bearer token"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/imageToVideo:
+    post:
+      summary: Image to Video
+      description: |
+        Convert an uploaded image to a video using ComfyUI workflow.
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - prompt
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Input image file to animate
+                prompt:
+                  type: string
+                  description: Text prompt describing the video generation
+                  example: "A cinematic shot of a car moving forward"
+                  minLength: 1
+                videoLength:
+                  type: integer
+                  description: Desired video length in frames (optional)
+                  example: 16
+      responses:
+        "200":
+          description: Video generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Successful video generation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      videoUrl: "https://s3.amazonaws.com/bucket/image-to-video/generated-video.mp4"
+                      processingTime: 15600
+        "400":
+          description: Bad request - missing file or prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_file:
+                  summary: Missing file
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                    error: "Image file is required"
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Authorization header is required"
         "500":
           description: Internal server error
           content:
