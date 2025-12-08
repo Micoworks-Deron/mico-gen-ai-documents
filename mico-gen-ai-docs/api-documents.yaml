@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: API
+  title: Mico Gen AI
   description: |
     Comprehensive AI Vision API for image processing and generation platforms.
 

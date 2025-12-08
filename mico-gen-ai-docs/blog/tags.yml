@@ -67,3 +67,38 @@ GIF:
   label: GIF
   permalink: /gif
   description: GIF generation and animation features
+
+release:
+  label: Release
+  permalink: /release
+  description: Product releases and feature announcements
+
+popup:
+  label: Popup
+  permalink: /popup
+  description: Popup advertisement and template features
+
+template:
+  label: Template
+  permalink: /template
+  description: Template-based image generation and variation
+
+variation:
+  label: Variation
+  permalink: /variation
+  description: Image variation and A/B testing features
+
+refinement:
+  label: Refinement
+  permalink: /refinement
+  description: Image refinement and optimization features
+
+quality:
+  label: Quality
+  permalink: /quality
+  description: Image quality enhancement and professional standards
+
+ROI:
+  label: ROI
+  permalink: /roi
+  description: Return on investment and conversion optimization

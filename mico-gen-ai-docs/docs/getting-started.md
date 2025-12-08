@@ -73,6 +73,16 @@ Mico Gen AI supports three powerful AI platforms:
 
 ## Need Help?
 
-- Check our [FAQ section](#faq)
-- Contact support at support@mico.ai
-- Join our Discord community for real-time help
+- Contact support at h.alan@mico-inc.com or l.deron@mico-inc.com
+- Join our community for support and discussions
+
+## FAQ
+
+### How do I get an API key?
+Apply for a free API key by contacting h.alan@mico-inc.com or l.deron@mico-inc.com
+
+### What file formats are supported?
+We support JPEG, PNG, and WebP formats with a maximum file size of 35MB.
+
+### What are the rate limits?
+Rate limits vary by subscription plan. Contact support for details about your specific plan.
