@@ -39,6 +39,12 @@ info:
     - Standard rate limiting applies
     - GPU accelerator options: low, medium, high
 
+    ## Known issue (Staging/Production TLS certificate)
+    If you use the **Staging** / **Production** base URLs and see `ERR_CERT_COMMON_NAME_INVALID`, it’s a temporary certificate hostname mismatch.
+
+    - For curl/Postman testing, you can temporarily use `curl --insecure (-k)` or disable SSL verification in Postman
+    - For browser-based requests, TLS verification cannot be bypassed; wait for the certificate fix
+
     ## Prompt Formats
     The API supports two prompt formats for generation endpoints:
 
@@ -1205,6 +1211,31 @@ paths:
       summary: Image to Video
       description: |
         Convert an uploaded image to a video using ComfyUI workflow.
+
+        ### Temporary TLS workaround (Staging/Production)
+        If you see `ERR_CERT_COMMON_NAME_INVALID` on **Staging** / **Production**, it’s a temporary certificate hostname mismatch.
+
+        - **curl**: add `--insecure` (or `-k`)
+        - **Postman**: disable SSL certificate verification
+        - **Browser calls**: generally cannot bypass TLS verification; wait for the certificate fix
+
+        ### Example (Development)
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/aivision/imageToVideo' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'imageFile=@/path/to/image.jpg' \
+          --form-string 'prompt=Describe the motion you want in the video' \
+          --form 'videoLength=3'
+        ```
+
+        ### Example (Staging)
+        ```bash
+        curl -k --location 'https://mico.gen.ai.stg-craft.mico.one/aivision/imageToVideo' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'imageFile=@/path/to/image.jpg' \
+          --form-string 'prompt=Describe the motion you want in the video' \
+          --form 'videoLength=3'
+        ```
       tags:
         - Mico Gen AI
       security:
