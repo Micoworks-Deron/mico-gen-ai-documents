@@ -19,18 +19,27 @@ Authorization: Bearer YOUR_API_KEY
 
 **Note**: `/health` and `/documentation` endpoints are publicly accessible and do not require authentication.
 
-### 3. Make Your First API Call
+### 3. Choose Environment (Base URL)
+
+Use the correct base URL for the environment you’re calling:
+
+- **Dev**: `https://api-mico-gen-ai.dev-craft.mico.one`
+- **Staging**: `https://mico.gen.ai.stg-craft.mico.one`
+- **Production**: `https://mico.gen.ai.craft.mico.one`
+
+### 4. Make Your First API Call
 
 Let's start with a simple background removal request:
 
 ```bash
-curl -X POST "https://api.mico.ai/aivision/background-removal" \
+BASE_URL="https://api-mico-gen-ai.dev-craft.mico.one"
+curl -X POST "$BASE_URL/aivision/autoBackgroundRemoval" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: multipart/form-data" \
-  -F "image=@your-image.jpg"
+  -F "file=@your-image.jpg"
 ```
 
-### 4. Response Format
+### 5. Response Format
 
 All API responses follow a consistent JSON format:
 

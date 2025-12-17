@@ -85,11 +85,11 @@ info:
     url: https://opensource.org/licenses/ISC
 
 servers:
-  - url: https://mico.gen.ai.dev-craft.mico.one
+  - url: https://api-mico-gen-ai.dev-craft.mico.one
     description: Development server (dev)
   - url: https://mico.gen.ai.stg-craft.mico.one
     description: Staging server (stg)
-  - url: https://mico.gen.ai.craft.mico.one/
+  - url: https://mico.gen.ai.craft.mico.one
     description: Production server (prd)
 
 tags:
@@ -1216,10 +1216,10 @@ paths:
             schema:
               type: object
               required:
-                - file
+                - imageFile
                 - prompt
               properties:
-                file:
+                imageFile:
                   type: string
                   format: binary
                   description: Input image file to animate
@@ -1249,7 +1249,7 @@ paths:
                       videoUrl: "https://s3.amazonaws.com/bucket/image-to-video/generated-video.mp4"
                       processingTime: 15600
         "400":
-          description: Bad request - missing file or prompt
+          description: Bad request - missing image file or prompt
           content:
             application/json:
               schema:

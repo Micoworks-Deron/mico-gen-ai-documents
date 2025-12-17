@@ -55,7 +55,7 @@ Convert an uploaded image to a video using ComfyUI workflow.
 
 <RequestSchema
   title={"Body"}
-  body={{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","required":["file","prompt"],"properties":{"file":{"type":"string","format":"binary","description":"Input image file to animate"},"prompt":{"type":"string","description":"Text prompt describing the video generation","example":"A cinematic shot of a car moving forward","minLength":1},"videoLength":{"type":"integer","description":"Desired video length in frames (optional)","example":16}}}}}}}
+  body={{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","required":["imageFile","prompt"],"properties":{"imageFile":{"type":"string","format":"binary","description":"Input image file to animate"},"prompt":{"type":"string","description":"Text prompt describing the video generation","example":"A cinematic shot of a car moving forward","minLength":1},"videoLength":{"type":"integer","description":"Desired video length in frames (optional)","example":16}}}}}}}
 >
   
 </RequestSchema>
