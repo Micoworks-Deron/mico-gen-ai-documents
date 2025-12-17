@@ -27,6 +27,14 @@ Use the correct base URL for the environment you’re calling:
 - **Staging**: `https://mico.gen.ai.stg-craft.mico.one`
 - **Production**: `https://mico.gen.ai.craft.mico.one`
 
+#### Known issue (Staging/Production TLS certificate)
+
+Currently, **Staging** and **Production** may return a browser error like `ERR_CERT_COMMON_NAME_INVALID` due to a certificate hostname mismatch.
+
+- For **temporary testing** with `curl`, add `--insecure` (or `-k`)
+- For **Postman**, disable **SSL certificate verification**
+- For **browser-based calls**, you generally cannot bypass TLS verification safely; wait for the certificate fix
+
 ### 4. Make Your First API Call
 
 Let's start with a simple background removal request:

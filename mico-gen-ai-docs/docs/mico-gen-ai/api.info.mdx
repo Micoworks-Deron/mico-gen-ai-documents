@@ -42,6 +42,13 @@ Authorization: Bearer YOUR_API_KEY
 
 **Note**: `/health` and `/documentation` endpoints are publicly accessible and do not require authentication.
 
+## Known issue (Staging/Production TLS certificate)
+
+If you use the **Staging** / **Production** base URLs and see `ERR_CERT_COMMON_NAME_INVALID`, it’s a temporary certificate hostname mismatch.
+
+- For **curl/Postman testing**, you can temporarily use `curl --insecure (-k)` or disable SSL verification in Postman
+- For **browser-based** “Try it” requests, TLS verification cannot be bypassed; wait for the certificate fix
+
 ## File Upload Limits
 
 - Maximum file size: 35MB
