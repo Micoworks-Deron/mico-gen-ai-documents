@@ -303,14 +303,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -432,14 +430,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "422":
           description: Unprocessable entity - invalid JSON format
           content:
@@ -548,14 +544,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -654,14 +648,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -812,14 +804,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -951,14 +941,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -1090,14 +1078,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
 
   /aivision/imageVariationsRecommendation:
     post:
@@ -1186,14 +1172,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -1415,16 +1399,14 @@ paths:
                   summary: Missing templateImage file
                   value:
                     status_code: 400
-                    message: "BAD_REQUEST"
+                    message: "BAD_REQUEST: templateImage is required"
                     result: null
-                    error: "templateImage file is required"
                 missing_data:
                   summary: Missing templateData
                   value:
                     status_code: 400
-                    message: "BAD_REQUEST"
+                    message: "BAD_REQUEST: templateData is required"
                     result: null
-                    error: "templateData is required"
         "401":
           description: Unauthorized - invalid or missing authentication
           content:
@@ -1438,14 +1420,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "500":
           description: Internal server error
           content:
@@ -1596,14 +1576,12 @@ paths:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Authorization header is required"
                 invalid_token:
                   summary: Invalid token
                   value:
                     status_code: 401
                     message: "UNAUTHORIZED"
                     result: null
-                    error: "Invalid or expired Bearer token"
         "404":
           description: Job not found
           content:
@@ -1615,9 +1593,8 @@ paths:
                   summary: Job not found
                   value:
                     status_code: 404
-                    message: "NOT_FOUND"
+                    message: "Job not found"
                     result: null
-                    error: "Job not found"
         "500":
           description: Internal server error
           content:
