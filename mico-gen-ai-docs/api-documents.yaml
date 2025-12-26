@@ -1474,6 +1474,7 @@ paths:
         The response includes:
         - Job-level information (job_id, status, job_type, batch_size)
         - Task-level information (task_id, index, status, result URL or JSON string, processingTime, error_msg)
+        - Job-Status category (completed, failed, pending, processing)
         - Progress tracking (total_tasks, completed_tasks, failed_tasks)
         
         Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array contains a stringified JSON of the optimized template instead of a URL.
@@ -1551,43 +1552,6 @@ paths:
                           error_msg: null
                       created_at: "2025-12-23T18:16:25.892Z"
                       updated_at: "2025-12-23T18:17:07.120Z"
-                with_failures:
-                  summary: Job with some failed tasks
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      job_id: "43a53966-adf9-4431-ae20-141d5d9c9f2e"
-                      status: "completed"
-                      job_type: "TEMPLATE_VARIATION"
-                      batch_size: 3
-                      total_tasks: 3
-                      completed_tasks: 2
-                      failed_tasks: 1
-                      tasks:
-                        - task_id: "task-1"
-                          index: 0
-                          status: "completed"
-                          job_type: "TEMPLATE_VARIATION"
-                          result: "https://s3.amazonaws.com/bucket/result-1.png"
-                          processingTime: 25000
-                          error_msg: null
-                        - task_id: "task-2"
-                          index: 1
-                          status: "failed"
-                          job_type: "TEMPLATE_VARIATION"
-                          result: null
-                          processingTime: null
-                          error_msg: "Processing timeout"
-                        - task_id: "task-3"
-                          index: 2
-                          status: "completed"
-                          job_type: "TEMPLATE_VARIATION"
-                          result: "https://s3.amazonaws.com/bucket/result-3.png"
-                          processingTime: 28000
-                          error_msg: null
-                      created_at: "2025-12-23T18:16:25.892Z"
-                      updated_at: "2025-12-23T18:17:07.120Z"
                 template_variation_completed:
                   summary: Template variation job completed
                   description: Example of a completed TEMPLATE_VARIATION job where the result is a stringified JSON.
@@ -1598,9 +1562,9 @@ paths:
                       job_id: "663a9767-a5a3-450b-b0ca-44cdfe6c1f9e"
                       status: "completed"
                       job_type: "TEMPLATE_VARIATION"
-                      batch_size: 3
-                      total_tasks: 1
-                      completed_tasks: 1
+                      batch_size: 2
+                      total_tasks: 2
+                      completed_tasks: 2
                       failed_tasks: 0
                       tasks:
                         - task_id: "03a1db7f-84d6-4e4b-9d32-e7cdb6f3ffd0"
@@ -1609,6 +1573,13 @@ paths:
                           job_type: "TEMPLATE_VARIATION"
                           result: '{"sheet_id":2944,"sheet_name":"MicoCraft","height":1024,"width":779,"layers":[{"id":24834,"image_type":"image","name":"headline_decoration_right","url_path":"https://...png"},...]}'
                           processingTime: 82745
+                          error_msg: null
+                        - task_id: "873c4a95-9a73-45bb-bcde-55c3a4a6be0f"
+                          index: 1
+                          status: "completed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: '{"sheet_id":2944,"sheet_name":"MicoCraft","height":1024,"width":779,"layers":[{"id":24834,"image_type":"image","name":"headline_decoration_right","url_path":"https://...png"},...]}'
+                          processingTime: 82555
                           error_msg: null
                       created_at: "2025-12-25T05:42:37.954Z"
                       updated_at: "2025-12-25T05:46:49.617Z"
