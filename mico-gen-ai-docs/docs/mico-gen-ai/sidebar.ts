@@ -58,6 +58,18 @@ const sidebar: SidebarsConfig = {
           label: "Image to Video",
           className: "api-method post",
         },
+        {
+          type: "doc",
+          id: "template-variation-optimization",
+          label: "Template variation optimization",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "get-job-status",
+          label: "Get job status",
+          className: "api-method get",
+        },
       ],
     },
     {

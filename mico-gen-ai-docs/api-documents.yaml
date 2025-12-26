@@ -13,8 +13,10 @@ info:
     - **Image Inpainting**: Fill in missing or damaged parts of images
     - **Inpainting Removal**: Remove objects from images using AI inpainting
     - **Ad Variation**: Generate ad variations with manual prompts or automatic analysis mode
+    - **Template Variation**: Optimize and generate variations of design templates via asynchronous jobs
     - **Image Variations Recommendation**: Get AI-powered recommendations for image variations
     - **Image to Video**: Convert an uploaded image to a video
+    - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
 
     ## Authentication
     All `/aivision/*` endpoints require authentication using one of the following methods:
@@ -94,9 +96,9 @@ servers:
   - url: https://api-mico-gen-ai.dev-craft.mico.one
     description: Development server (dev)
   - url: https://mico.gen.ai.stg-craft.mico.one
-    description: Staging server (stg). Note: TLS certificate for this hostname is being updated; use curl --insecure (-k) or disable SSL verification in Postman temporarily.
+    description: "Staging server (stg). Note: TLS certificate for this hostname is being updated; use curl --insecure (-k) or disable SSL verification in Postman temporarily."
   - url: https://mico.gen.ai.craft.mico.one
-    description: Production server (prd). Note: TLS certificate for this hostname is being updated; use curl --insecure (-k) or disable SSL verification in Postman temporarily.
+    description: "Production server (prd). Note: TLS certificate for this hostname is being updated; use curl --insecure (-k) or disable SSL verification in Postman temporarily."
 
 tags:
   - name: Mico Gen AI
@@ -1213,27 +1215,29 @@ paths:
         Convert an uploaded image to a video using ComfyUI workflow.
 
         ### Temporary TLS workaround (Staging/Production)
-        If you see `ERR_CERT_COMMON_NAME_INVALID` on **Staging** / **Production**, it’s a temporary certificate hostname mismatch.
+        If you see `ERR_CERT_COMMON_NAME_INVALID` on **Staging** / **Production**, it's a temporary certificate hostname mismatch.
 
         - **curl**: add `--insecure` (or `-k`)
         - **Postman**: disable SSL certificate verification
         - **Browser calls**: generally cannot bypass TLS verification; wait for the certificate fix
 
-      x-code-samples:
-        - lang: CURL (Dev)
-          source: |
-            curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/aivision/imageToVideo' \
-            --header 'Authorization: Bearer YOUR_API_KEY' \
-            --form 'imageFile=@/path/to/image.jpg' \
-            --form-string 'prompt=Describe the motion you want in the video' \
-            --form 'videoLength=3'
-        - lang: CURL (Staging - with -k)
-          source: |
-            curl -k --location 'https://mico.gen.ai.stg-craft.mico.one/aivision/imageToVideo' \
-            --header 'Authorization: Bearer YOUR_API_KEY' \
-            --form 'imageFile=@/path/to/image.jpg' \
-            --form-string 'prompt=Describe the motion you want in the video' \
-            --form 'videoLength=3'
+        ### Example (Development)
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/aivision/imageToVideo' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'imageFile=@/path/to/image.jpg' \
+          --form-string 'prompt=Describe the motion you want in the video' \
+          --form 'videoLength=3'
+        ```
+
+        ### Example (Staging)
+        ```bash
+        curl -k --location 'https://mico.gen.ai.stg-craft.mico.one/aivision/imageToVideo' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'imageFile=@/path/to/image.jpg' \
+          --form-string 'prompt=Describe the motion you want in the video' \
+          --form 'videoLength=3'
+        ```
       tags:
         - Mico Gen AI
       security:
@@ -1305,6 +1309,343 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
                     error: "Authorization header is required"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /mcr/templateVariation:
+    post:
+      summary: Template variation optimization
+      description: |
+        Accepts template image as file upload and template data as JSON string in multipart form.
+        When batchSize is provided, creates multiple tasks per image (e.g., batchSize=2 creates 2 tasks with the same job_id but different task_ids).
+        
+        This is an asynchronous operation that returns a job_id. Use the `/aivision/jobs/:job_id` endpoint to check the status and retrieve results.
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - templateImage
+                - templateData
+              properties:
+                templateImage:
+                  type: string
+                  format: binary
+                  description: Template image file to process (JPEG, PNG, WebP, max 35MB)
+                templateData:
+                  type: string
+                  description: |
+                    Template JSON data structure as a string. Contains template configuration including layers, text elements, and styling information.
+                    Example: '{"sheet_id": 2944, "sheet_name": "MicoCraft", "height": 1024, "width": 779, "layers": [...]}'
+                prompt:
+                  type: string
+                  description: User requirements for template optimization (optional, defaults to "do a variation as a pro designer")
+                  example: "Create a modern, minimalist design variation"
+                metadata:
+                  type: string
+                  description: Additional metadata for the request (optional)
+                generateImage:
+                  type: string
+                  description: Whether to generate the final image (optional, defaults to "true"). Set to "false" to skip image generation.
+                  enum: ["true", "false"]
+                  default: "true"
+                batchSize:
+                  type: integer
+                  description: Number of tasks to create per image (optional, defaults to 1). When batchSize > 1, multiple tasks are created with the same job_id but different task_ids and sequential indices.
+                  minimum: 1
+                  maximum: 10
+                  default: 1
+                  example: 2
+            examples:
+              basic:
+                summary: Basic template variation
+                description: Generate a single variation with default settings
+                value:
+                  templateImage: "template.jpg"
+                  templateData: '{"sheet_id": 2944, "sheet_name": "MicoCraft", "height": 1024, "width": 779, "layers": []}'
+              batch_processing:
+                summary: Batch processing
+                description: Create multiple tasks (batchSize=3) for the same image
+                value:
+                  templateImage: "template.jpg"
+                  templateData: '{"sheet_id": 2944, "layers": []}'
+                  batchSize: "3"
+      responses:
+        "200":
+          description: MCR Template variation job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Successful job creation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
+        "400":
+          description: Bad request - missing required parameters (templateImage file or templateData)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_file:
+                  summary: Missing templateImage file
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                    error: "templateImage file is required"
+                missing_data:
+                  summary: Missing templateData
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                    error: "templateData is required"
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Authorization header is required"
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Invalid or expired Bearer token"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/jobs/{job_id}:
+    get:
+      summary: Get job status
+      description: |
+        Fetch the status and results of an asynchronous AI vision job.
+        Returns detailed information about the job including all associated tasks, their statuses, results, and processing times.
+        
+        This endpoint is used to check the status of jobs created by asynchronous operations such as:
+        - `/mcr/templateVariation` - MCR template variation jobs
+        - `/aivision/adRefinement` - Ad refinement jobs
+        
+        The response includes:
+        - Job-level information (job_id, status, job_type, batch_size)
+        - Task-level information (task_id, index, status, result URL or JSON string, processingTime, error_msg)
+        - Progress tracking (total_tasks, completed_tasks, failed_tasks)
+        
+        Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array contains a stringified JSON of the optimized template instead of a URL.
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: The unique ID of the job
+          schema:
+            type: string
+            format: uuid
+            example: "4110b319-12f1-426f-8844-483509cde46d"
+      responses:
+        "200":
+          description: Job status successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                processing:
+                  summary: Job still processing
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
+                      job_type: "TEMPLATE_VARIATION"
+                      batch_size: 2
+                      total_tasks: 2
+                      completed_tasks: 0
+                      failed_tasks: 0
+                      tasks:
+                        - task_id: "dbb0aa56-e291-4c2c-b7f1-e5634e391300"
+                          index: 0
+                          status: "pending"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: null
+                          processingTime: null
+                          error_msg: null
+                        - task_id: "a180c051-31c9-46a8-91d3-7cdfb6c1b440"
+                          index: 1
+                          status: "processing"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: null
+                          processingTime: null
+                          error_msg: null
+                      created_at: "2025-12-23T03:06:38.482Z"
+                      updated_at: "2025-12-23T03:06:41.858Z"
+                completed:
+                  summary: Job completed successfully
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "43a53966-adf9-4431-ae20-141d5d9c9f2e"
+                      status: "completed"
+                      job_type: "AD_REFINEMENT"
+                      batch_size: 1
+                      total_tasks: 1
+                      completed_tasks: 1
+                      failed_tasks: 0
+                      tasks:
+                        - task_id: "a180c051-31c9-46a8-91d3-7cdfb6c1b440"
+                          index: 0
+                          status: "completed"
+                          job_type: "AD_REFINEMENT"
+                          result: "https://mico-gen-ai-dev.s3.ap-northeast-1.amazonaws.com/openai-editing/823e0e06-c1c7-4de4-b9ed-a7202ad65fbd.png"
+                          processingTime: 39293
+                          error_msg: null
+                      created_at: "2025-12-23T18:16:25.892Z"
+                      updated_at: "2025-12-23T18:17:07.120Z"
+                with_failures:
+                  summary: Job with some failed tasks
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "43a53966-adf9-4431-ae20-141d5d9c9f2e"
+                      status: "completed"
+                      job_type: "TEMPLATE_VARIATION"
+                      batch_size: 3
+                      total_tasks: 3
+                      completed_tasks: 2
+                      failed_tasks: 1
+                      tasks:
+                        - task_id: "task-1"
+                          index: 0
+                          status: "completed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: "https://s3.amazonaws.com/bucket/result-1.png"
+                          processingTime: 25000
+                          error_msg: null
+                        - task_id: "task-2"
+                          index: 1
+                          status: "failed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: null
+                          processingTime: null
+                          error_msg: "Processing timeout"
+                        - task_id: "task-3"
+                          index: 2
+                          status: "completed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: "https://s3.amazonaws.com/bucket/result-3.png"
+                          processingTime: 28000
+                          error_msg: null
+                      created_at: "2025-12-23T18:16:25.892Z"
+                      updated_at: "2025-12-23T18:17:07.120Z"
+                template_variation_completed:
+                  summary: Template variation job completed
+                  description: Example of a completed TEMPLATE_VARIATION job where the result is a stringified JSON.
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "663a9767-a5a3-450b-b0ca-44cdfe6c1f9e"
+                      status: "completed"
+                      job_type: "TEMPLATE_VARIATION"
+                      batch_size: 3
+                      total_tasks: 1
+                      completed_tasks: 1
+                      failed_tasks: 0
+                      tasks:
+                        - task_id: "03a1db7f-84d6-4e4b-9d32-e7cdb6f3ffd0"
+                          index: 0
+                          status: "completed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: '{"sheet_id":2944,"sheet_name":"MicoCraft","height":1024,"width":779,"layers":[{"id":24834,"image_type":"image","name":"headline_decoration_right","url_path":"https://...png"},...]}'
+                          processingTime: 82745
+                          error_msg: null
+                      created_at: "2025-12-25T05:42:37.954Z"
+                      updated_at: "2025-12-25T05:46:49.617Z"
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Authorization header is required"
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Invalid or expired Bearer token"
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                not_found:
+                  summary: Job not found
+                  value:
+                    status_code: 404
+                    message: "NOT_FOUND"
+                    result: null
+                    error: "Job not found"
         "500":
           description: Internal server error
           content:
