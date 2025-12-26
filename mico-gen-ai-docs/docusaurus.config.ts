@@ -136,7 +136,7 @@ const config: Config = {
         config: {
           micoGenAI: {
             specPath: "api-documents.yaml",
-            outputDir: "docs/mico-gen-ai", // output to docs dir so that it's processed by docs plugin
+            outputDir: "docs/mico-gen-ai",
             sidebarOptions: {
               groupPathsBy: "tag",
             },

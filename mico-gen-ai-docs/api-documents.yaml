@@ -1326,6 +1326,7 @@ paths:
   /mcr/templateVariation:
     post:
       summary: Template variation optimization
+      operationId: template-variation-mcr
       description: |
         Accepts template image as file upload and template data as JSON string in multipart form.
         When batchSize is provided, creates multiple tasks per image (e.g., batchSize=2 creates 2 tasks with the same job_id but different task_ids).

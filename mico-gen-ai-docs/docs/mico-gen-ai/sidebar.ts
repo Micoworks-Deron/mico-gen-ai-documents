@@ -4,7 +4,7 @@ const sidebar: SidebarsConfig = {
   apisidebar: [
     {
       type: "doc",
-      id: "api",
+      id: "mico-gen-ai/mico-gen-ai",
     },
     {
       type: "category",
@@ -12,49 +12,49 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "ad-variation-generation",
+          id: "mico-gen-ai/ad-variation-generation",
           label: "Ad Variation Generation",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "auto-background-removal",
+          id: "mico-gen-ai/auto-background-removal",
           label: "Auto background removal",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "extract-objects-from-image",
+          id: "mico-gen-ai/extract-objects-from-image",
           label: "Extract objects from image",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "generate-human-images",
+          id: "mico-gen-ai/generate-human-images",
           label: "Generate human images",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "generate-stock-photo-images",
+          id: "mico-gen-ai/generate-stock-photo-images",
           label: "Generate stock photo images",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "fill-missing-parts-of-image",
+          id: "mico-gen-ai/fill-missing-parts-of-image",
           label: "Fill missing parts of image",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "image-variations-recommendation",
+          id: "mico-gen-ai/image-variations-recommendation",
           label: "Image variations recommendation",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "image-to-video",
+          id: "mico-gen-ai/image-to-video",
           label: "Image to Video",
           className: "api-method post",
         },
@@ -66,7 +66,7 @@ const sidebar: SidebarsConfig = {
         },
         {
           type: "doc",
-          id: "get-job-status",
+          id: "mico-gen-ai/get-job-status",
           label: "Get job status",
           className: "api-method get",
         },
@@ -78,13 +78,13 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "extend-image-boundaries",
+          id: "mico-gen-ai/extend-image-boundaries",
           label: "Extend image boundaries",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "remove-objects-using-inpainting",
+          id: "mico-gen-ai/remove-objects-using-inpainting",
           label: "Remove objects using inpainting",
           className: "api-method post",
         },
