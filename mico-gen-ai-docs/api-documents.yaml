@@ -1683,35 +1683,7 @@ components:
           description: Response message
           example: "SUCCESS"
         result:
-          oneOf:
-            - type: object
-              properties:
-                success:
-                  type: boolean
-                  description: Operation success status
-                  example: true
-                message:
-                  type: string
-                  description: Operation message
-                  example: "Background removed successfully"
-                data:
-                  type: array
-                  items:
-                    type: string
-                  description: Array of result URLs
-                  example:
-                    [
-                      "https://s3.amazonaws.com/bucket/processed/image-12345.png",
-                    ]
-            - type: array
-              items:
-                type: string
-              description: Array of result URLs
-              example:
-                [
-                  "https://s3.amazonaws.com/bucket/generated/image-1.png",
-                  "https://s3.amazonaws.com/bucket/generated/image-2.png",
-                ]
+          description: Detailed response data
       required:
         - status_code
         - message

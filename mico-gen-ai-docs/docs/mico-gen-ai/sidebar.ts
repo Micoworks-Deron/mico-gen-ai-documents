@@ -60,8 +60,8 @@ const sidebar: SidebarsConfig = {
         },
         {
           type: "doc",
-          id: "template-variation-optimization",
-          label: "Template variation optimization",
+          id: "template-variation-mcr",
+          label: "Template variation: Mico Craft AI",
           className: "api-method post",
         },
         {
