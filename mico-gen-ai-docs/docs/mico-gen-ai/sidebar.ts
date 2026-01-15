@@ -12,20 +12,8 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "mico-gen-ai/ad-variation-generation",
-          label: "Ad Variation Generation",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
           id: "mico-gen-ai/auto-background-removal",
           label: "Auto background removal",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/extract-objects-from-image",
-          label: "Extract objects from image",
           className: "api-method post",
         },
         {
@@ -42,26 +30,14 @@ const sidebar: SidebarsConfig = {
         },
         {
           type: "doc",
-          id: "mico-gen-ai/fill-missing-parts-of-image",
-          label: "Fill missing parts of image",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/image-variations-recommendation",
-          label: "Image variations recommendation",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
           id: "mico-gen-ai/image-to-video",
           label: "Image to Video",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "template-variation-mcr",
-          label: "Template variation: Mico Craft AI",
+          id: "mico-gen-ai/template-variation-mcr",
+          label: "Template variation optimization",
           className: "api-method post",
         },
         {
@@ -76,12 +52,6 @@ const sidebar: SidebarsConfig = {
       type: "category",
       label: "AI Vision",
       items: [
-        {
-          type: "doc",
-          id: "mico-gen-ai/extend-image-boundaries",
-          label: "Extend image boundaries",
-          className: "api-method post",
-        },
         {
           type: "doc",
           id: "mico-gen-ai/remove-objects-using-inpainting",

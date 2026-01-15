@@ -5,23 +5,17 @@ info:
     Comprehensive AI Vision API for image processing and generation platforms.
 
     ## Features
+    - **Template Variation**: Optimize and generate variations of design templates
     - **Background Removal**: Automatically remove backgrounds from images
-    - **Object Extraction**: Extract objects using bounding boxes or point selection
     - **Human Generation**: Generate photorealistic human images from text prompts with detailed control options
     - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts and detailed control options
-    - **Image Outpainting**: Extend images beyond their original boundaries
-    - **Image Inpainting**: Fill in missing or damaged parts of images
     - **Inpainting Removal**: Remove objects from images using AI inpainting
-    - **Ad Variation**: Generate ad variations with manual prompts or automatic analysis mode
-    - **Template Variation**: Optimize and generate variations of design templates via asynchronous jobs
-    - **Image Variations Recommendation**: Get AI-powered recommendations for image variations
     - **Image to Video**: Convert an uploaded image to a video
     - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
 
     ## Authentication
     All `/aivision/*` endpoints require authentication using one of the following methods:
 
-    ### Bearer Token Authentication
     Use your API key with Bearer format:
     ```
     Authorization: Bearer YOUR_API_KEY
@@ -30,22 +24,12 @@ info:
     ## File Upload Limits
     - Maximum file size: 35MB
     - Supported formats: JPEG, PNG, WebP
-    - Maximum files per request: 10
+    - Maximum files per request: 6
 
     ## Services
-    - **Mico (ComfyICU)**: Primary AI service for most operations
-    - **Flux**: Alternative service for inpainting and outpainting
-    - **OpenAI**: Advanced service for inpainting and outpainting
-
-    ## Rate Limits
-    - Standard rate limiting applies
-    - GPU accelerator options: low, medium, high
-
-    ## Known issue (Staging/Production TLS certificate)
-    If you use the **Staging** / **Production** base URLs and see `ERR_CERT_COMMON_NAME_INVALID`, it’s a temporary certificate hostname mismatch.
-
-    - For curl/Postman testing, you can temporarily use `curl --insecure (-k)` or disable SSL verification in Postman
-    - For browser-based requests, TLS verification cannot be bypassed; wait for the certificate fix
+    - **Gemini3.0**: Primary AI service for most operations
+    - **OpenAI**: Alternative service for most operations
+    - **Mico**: Alternative service for most operations
 
     ## Prompt Formats
     The API supports two prompt formats for generation endpoints:
@@ -65,19 +49,6 @@ info:
         "category": "illustration",
         "style": "realistic photography",
         "background": "natural garden setting",
-        "mood": "peaceful"
-      }
-    }
-    ```
-
-    ### JSON Format (Metadata Only)
-    ```json
-    {
-      "prompt": {
-        "text": "",
-        "category": "illustration",
-        "style": "Japanese Manga pop style",
-        "background": "urban cityscape",
         "mood": "peaceful"
       }
     }
@@ -107,117 +78,6 @@ tags:
     description: Authentication and token management endpoints
 
 paths:
-  /aivision/adVariation:
-    post:
-      summary: Ad Variation Generation
-      description: |
-        Generate ad variations with manual prompts or automatic analysis mode. Supports multiple models including Gemini, Flux, and other AI services.
-      tags:
-        - Mico Gen AI
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required:
-                - mode
-                - image
-              properties:
-                mode:
-                  type: string
-                  enum: [manual, auto]
-                  description: Generation mode - manual for custom prompts, auto for AI analysis
-                  example: "manual"
-                prompt:
-                  type: string
-                  description: Text prompt for manual mode (required when mode=manual)
-                  example: "Create a modern, minimalist ad variation"
-                image:
-                  type: string
-                  format: binary
-                  description: Input image file
-                ref_image:
-                  type: string
-                  format: binary
-                  description: Reference image for style guidance (optional)
-                model:
-                  type: string
-                  description: AI model to use (gemini, flux, etc.)
-                  example: "gemini"
-                metadata:
-                  type: string
-                  description: Additional metadata for the request
-      responses:
-        "200":
-          description: Ad variation generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              examples:
-                success:
-                  summary: Successful ad variation generation
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      image_url: "https://example.com/generated-ad-variation.jpg"
-                      metadata:
-                        model_used: "gemini"
-                        mode: "manual"
-                        processing_time: "2.5s"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                bad_request:
-                  summary: Invalid request parameters
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-                    error: "Missing required field: mode"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_auth:
-                  summary: Missing authorization header
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                    error: "Authorization header is required"
-                invalid_token:
-                  summary: Invalid or expired token
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                    error: "Invalid or expired Bearer token"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                server_error:
-                  summary: Internal server error
-                  value:
-                    status_code: 500
-                    message: "INTERNAL_SERVER_ERROR"
-                    result: null
-
   /aivision/autoBackgroundRemoval:
     post:
       summary: Auto background removal
@@ -265,12 +125,8 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      success: true
-                      message: "Background removed successfully"
-                      data:
-                        [
-                          "https://s3.amazonaws.com/bucket/auto-background-removal/processed-12345.png",
-                        ]
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
         "400":
           description: Bad request - missing or invalid file
           content:
@@ -323,146 +179,6 @@ paths:
                     message: "INTERNAL_SERVER_ERROR"
                     result: null
 
-  /aivision/objectsExtraction:
-    post:
-      summary: Extract objects from image
-      description: |
-        Extract objects from an image using either bounding boxes or point selection.
-        Supports both object extraction (with bounding boxes) and object segmentation (with points).
-      tags:
-        - Mico Gen AI
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Image file to process (JPEG, PNG, WebP, max 35MB)
-                bboxes:
-                  type: string
-                  description: |
-                    JSON array of bounding boxes for object extraction.
-                    Format: [{"startX": 0, "startY": 0, "endX": 100, "endY": 100}]
-                points:
-                  type: string
-                  description: |
-                    JSON object with positive and negative points for segmentation.
-                    Format: {"positive": [{"x": 100, "y": 100}], "negative": [{"x": 0, "y": 0}]}
-              required:
-                - file
-              oneOf:
-                - required: [bboxes]
-                - required: [points]
-            examples:
-              bounding_boxes:
-                summary: Extract using bounding boxes
-                description: Extract objects using precise bounding box coordinates
-                value:
-                  file: "scene.jpg"
-                  bboxes: '[{"startX": 100, "startY": 150, "endX": 300, "endY": 400}, {"startX": 500, "startY": 200, "endX": 700, "endY": 450}]'
-              single_object:
-                summary: Extract single object with bounding box
-                description: Extract one object using a single bounding box
-                value:
-                  file: "portrait.jpg"
-                  bboxes: '[{"startX": 50, "startY": 50, "endX": 250, "endY": 350}]'
-              points_segmentation:
-                summary: Extract using points
-                description: Use point selection for precise object segmentation
-                value:
-                  file: "complex_scene.jpg"
-                  points: '{"positive": [{"x": 150, "y": 200}, {"x": 160, "y": 210}], "negative": [{"x": 0, "y": 0}, {"x": 800, "y": 600}]}'
-      responses:
-        "200":
-          description: Objects extracted successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              examples:
-                success:
-                  summary: Successful object extraction
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      success: true
-                      message: "Objects extracted successfully"
-                      data:
-                        [
-                          "https://s3.amazonaws.com/bucket/objects-extraction/extracted-12345.png",
-                        ]
-        "400":
-          description: Bad request - missing file or invalid parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_file:
-                  summary: Missing file error
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-                missing_parameters:
-                  summary: Missing bboxes or points
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-        "401":
-          description: Unauthorized - invalid or missing authentication
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_auth:
-                  summary: Missing authorization header
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                invalid_token:
-                  summary: Invalid token
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-        "422":
-          description: Unprocessable entity - invalid JSON format
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                invalid_json:
-                  summary: Invalid JSON format
-                  value:
-                    status_code: 422
-                    message: "UNPROCESSABLE_ENTITY"
-                    result: null
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                server_error:
-                  summary: Internal server error
-                  value:
-                    status_code: 500
-                    message: "INTERNAL_SERVER_ERROR"
-                    result: null
-
   /aivision/humanGeneration:
     post:
       summary: Generate human images
@@ -492,7 +208,7 @@ paths:
                   width: 1024
                   height: 1024
                   batchSize: 2
-                  accelerator: "medium"
+                  model: "gemini"
       responses:
         "200":
           description: Human images generated successfully
@@ -507,11 +223,8 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      [
-                        "https://s3.amazonaws.com/bucket/human-generation/generated-1-12345.png",
-                        "https://s3.amazonaws.com/bucket/human-generation/generated-2-12345.png",
-                        "https://s3.amazonaws.com/bucket/human-generation/generated-3-12345.png",
-                      ]
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
         "400":
           description: Bad request - missing prompt or invalid parameters
           content:
@@ -595,7 +308,7 @@ paths:
                   width: 1024
                   height: 1024
                   batchSize: 2
-                  accelerator: "medium"
+                  model: "gemini"
                   promptEnhancer: true
       responses:
         "200":
@@ -611,11 +324,8 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      [
-                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-1-12345.png",
-                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-2-12345.png",
-                        "https://s3.amazonaws.com/bucket/stock-photo-generation/generated-3-12345.png",
-                      ]
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
         "400":
           description: Bad request - missing prompt or invalid parameters
           content:
@@ -631,299 +341,6 @@ paths:
                     result: null
                 invalid_dimensions:
                   summary: Invalid dimensions
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-        "401":
-          description: Unauthorized - invalid or missing authentication
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_auth:
-                  summary: Missing authorization header
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                invalid_token:
-                  summary: Invalid token
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                server_error:
-                  summary: Internal server error
-                  value:
-                    status_code: 500
-                    message: "INTERNAL_SERVER_ERROR"
-                    result: null
-
-  /aivision/imageOutpainting:
-    post:
-      summary: Extend image boundaries
-      description: |
-        Extend an image beyond its original boundaries using AI outpainting.
-        Supports Mico (ComfyICU), Flux, and OpenAI services for processing.
-      tags:
-        - AI Vision
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Image file to extend (JPEG, PNG, WebP, max 35MB)
-                left:
-                  type: integer
-                  description: Pixels to extend on the left side
-                  default: 128
-                top:
-                  type: integer
-                  description: Pixels to extend on the top side
-                  default: 128
-                right:
-                  type: integer
-                  description: Pixels to extend on the right side
-                  default: 128
-                bottom:
-                  type: integer
-                  description: Pixels to extend on the bottom side
-                  default: 128
-                service:
-                  type: string
-                  enum: [mico, flux, openai]
-                  description: Processing service to use
-                  default: mico
-                prompt:
-                  type: string
-                  description: Text prompt for the extension (optional)
-            examples:
-              basic:
-                summary: Basic outpainting
-                description: Extend image with default settings
-                value:
-                  file: "landscape.jpg"
-                  left: "128"
-                  top: "128"
-                  right: "128"
-                  bottom: "128"
-                  service: "mico"
-              wide_extension:
-                summary: Wide horizontal extension
-                description: Extend image horizontally more than vertically
-                value:
-                  file: "portrait.jpg"
-                  left: "256"
-                  top: "64"
-                  right: "256"
-                  bottom: "64"
-                  service: "mico"
-              flux_service:
-                summary: Using Flux service
-                description: Use Flux service with custom prompt
-                value:
-                  file: "interior.jpg"
-                  left: "128"
-                  top: "128"
-                  right: "128"
-                  bottom: "128"
-                  service: "flux"
-                  prompt: "Extend the image naturally with realistic details"
-              openai_service:
-                summary: Using OpenAI service
-                description: Use OpenAI service for advanced outpainting
-                value:
-                  file: "landscape.jpg"
-                  left: "128"
-                  top: "128"
-                  right: "128"
-                  bottom: "128"
-                  service: "openai"
-                  prompt: "Extend the landscape with mountains and sky"
-              minimal:
-                summary: Minimal parameters
-                description: Use only the required file parameter
-                value:
-                  file: "photo.jpg"
-      responses:
-        "200":
-          description: Image outpainting completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              examples:
-                success:
-                  summary: Successful outpainting
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      [
-                        "https://s3.amazonaws.com/bucket/image-outpainting/outpainted-12345.png",
-                      ]
-        "400":
-          description: Bad request - missing file or invalid parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_file:
-                  summary: Missing file
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-        "401":
-          description: Unauthorized - invalid or missing authentication
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_auth:
-                  summary: Missing authorization header
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                invalid_token:
-                  summary: Invalid token
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                server_error:
-                  summary: Internal server error
-                  value:
-                    status_code: 500
-                    message: "INTERNAL_SERVER_ERROR"
-                    result: null
-
-  /aivision/imageInpainting:
-    post:
-      summary: Fill missing parts of image
-      description: |
-        Fill in missing or damaged parts of an image using AI inpainting.
-        Supports Mico (ComfyICU), Flux, and OpenAI services.
-        For Flux and OpenAI services, only the original image and prompt are required.
-        For Mico service, both original image and mask are required.
-      tags:
-        - Mico Gen AI
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Original image file (JPEG, PNG, WebP, max 35MB)
-                maskFile:
-                  type: string
-                  format: binary
-                  description: Mask file indicating areas to fill (required for Mico service)
-                prompt:
-                  type: string
-                  description: Text prompt describing what to fill (required for Flux/OpenAI services)
-                accelerator:
-                  type: string
-                  enum: [low, medium, high]
-                  description: GPU accelerator level
-                  default: medium
-                service:
-                  type: string
-                  enum: [mico, flux, openai]
-                  description: Processing service to use
-                  default: mico
-            examples:
-              mico_service:
-                summary: Using Mico service
-                description: Use Mico service with mask file
-                value:
-                  file: "damaged_photo.jpg"
-                  maskFile: "damage_mask.png"
-                  prompt: "Complete the image with realistic details"
-                  accelerator: "medium"
-                  service: "mico"
-              flux_service:
-                summary: Using Flux service
-                description: Use Flux service with prompt only
-                value:
-                  file: "incomplete_landscape.jpg"
-                  prompt: "Fill the missing area with a beautiful landscape"
-                  service: "flux"
-              openai_service:
-                summary: Using OpenAI service
-                description: Use OpenAI service with prompt only
-                value:
-                  file: "old_photo.jpg"
-                  prompt: "Restore the damaged areas naturally"
-                  accelerator: "high"
-                  service: "openai"
-              high_quality:
-                summary: High quality inpainting
-                description: Use high accelerator for better quality
-                value:
-                  file: "old_photo.jpg"
-                  maskFile: "scratches_mask.png"
-                  prompt: "Restore the damaged areas naturally"
-                  accelerator: "high"
-                  service: "mico"
-      responses:
-        "200":
-          description: Image inpainting completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              examples:
-                success:
-                  summary: Successful inpainting
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      [
-                        "https://s3.amazonaws.com/bucket/image-inpainting/inpainted-12345.png",
-                      ]
-        "400":
-          description: Bad request - missing files or invalid parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_files:
-                  summary: Missing required files
                   value:
                     status_code: 400
                     message: "BAD_REQUEST"
@@ -991,11 +408,6 @@ paths:
                 prompt:
                   type: string
                   description: Text prompt describing what to remove (required for Flux/OpenAI services)
-                accelerator:
-                  type: string
-                  enum: [low, medium, high]
-                  description: GPU accelerator level
-                  default: medium
                 service:
                   type: string
                   enum: [mico, flux, openai]
@@ -1009,7 +421,6 @@ paths:
                   file: "photo_with_person.jpg"
                   maskFile: "person_mask.png"
                   prompt: "Remove the specified area and fill with realistic details"
-                  accelerator: "medium"
                   service: "mico"
               flux_service:
                 summary: Using Flux service
@@ -1024,7 +435,6 @@ paths:
                 value:
                   file: "group_photo.jpg"
                   prompt: "Remove the unwanted person from the photo"
-                  accelerator: "high"
                   service: "openai"
               remove_multiple:
                 summary: Remove multiple objects
@@ -1033,7 +443,6 @@ paths:
                   file: "group_photo.jpg"
                   maskFile: "unwanted_objects_mask.png"
                   prompt: "Remove all marked objects and fill naturally"
-                  accelerator: "high"
                   service: "mico"
       responses:
         "200":
@@ -1049,9 +458,8 @@ paths:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      [
-                        "https://s3.amazonaws.com/bucket/image-inpainting-removal/removed-12345.png",
-                      ]
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
         "400":
           description: Bad request - missing files or invalid parameters
           content:
@@ -1085,125 +493,11 @@ paths:
                     message: "UNAUTHORIZED"
                     result: null
 
-  /aivision/imageVariationsRecommendation:
-    post:
-      summary: Image variations recommendation
-      description: |
-        Analyze an uploaded advertisement image and return the top 3-5 most impactful design change suggestions to improve ROI and CTA.
-      tags:
-        - Mico Gen AI
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Image file to analyze (JPEG, PNG, WebP, max 35MB)
-                tenant_information:
-                  type: string
-                  description: Property type or industry context (e.g., real estate, commercial, residential). Defaults to general property.
-              required:
-                - file
-            examples:
-              basic:
-                summary: Recommend variations for an ad image
-                value:
-                  file: "ad_popup.jpg"
-                  tenant_information: "real estate"
-              commercial:
-                summary: Commercial property ad
-                value:
-                  file: "commercial_ad.jpg"
-                  tenant_information: "commercial property"
-              residential:
-                summary: Residential property ad
-                value:
-                  file: "residential_ad.jpg"
-                  tenant_information: "residential property"
-      responses:
-        "200":
-          description: Recommendations generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              examples:
-                success:
-                  summary: Successful recommendation
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      [
-                        "Change the CTA button to high-contrast color matching brand palette.",
-                        "Replace the background gradient with a cleaner, brighter tone for readability.",
-                        "Change headline font color to increase contrast vs. background.",
-                        "Add more white space around the main content for better visual hierarchy.",
-                      ]
-        "400":
-          description: Bad request - missing or invalid file
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_file:
-                  summary: Missing file
-                  value:
-                    status_code: 400
-                    message: "BAD_REQUEST"
-                    result: null
-        "401":
-          description: Unauthorized - invalid or missing authentication
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                missing_auth:
-                  summary: Missing authorization header
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-                invalid_token:
-                  summary: Invalid token
-                  value:
-                    status_code: 401
-                    message: "UNAUTHORIZED"
-                    result: null
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                server_error:
-                  summary: Internal server error
-                  value:
-                    status_code: 500
-                    message: "INTERNAL_SERVER_ERROR"
-                    result: null
-
   /aivision/imageToVideo:
     post:
       summary: Image to Video
       description: |
         Convert an uploaded image to a video using ComfyUI workflow.
-
-        ### Temporary TLS workaround (Staging/Production)
-        If you see `ERR_CERT_COMMON_NAME_INVALID` on **Staging** / **Production**, it's a temporary certificate hostname mismatch.
-
-        - **curl**: add `--insecure` (or `-k`)
-        - **Postman**: disable SSL certificate verification
-        - **Browser calls**: generally cannot bypass TLS verification; wait for the certificate fix
 
         ### Example (Development)
         ```bash
@@ -1306,6 +600,93 @@ paths:
                     status_code: 500
                     message: "INTERNAL_SERVER_ERROR"
                     result: null
+
+  /aivision/templateVariation:
+    post:
+      summary: Template variation optimization (JSON)
+      description: |
+        Optimize a template JSON and (optionally) generate an updated image, based on a template image URL and user prompt.
+        
+        This is a **synchronous** operation (returns the optimized JSON and an imageUrl in the same response).
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - templateImageUrl
+                - templateData
+                - prompt
+              properties:
+                templateImageUrl:
+                  type: string
+                  format: uri
+                  description: URL of the template image
+                templateData:
+                  description: Template JSON data (object) or a JSON string
+                prompt:
+                  type: string
+                  minLength: 1
+                  description: User requirements for template optimization
+                metadata:
+                  description: Optional metadata/context for processing (any JSON)
+            examples:
+              basic:
+                summary: Basic template variation
+                value:
+                  templateImageUrl: "https://example.com/template.png"
+                  templateData:
+                    sheet_id: 2944
+                    sheet_name: "MicoCraft"
+                    height: 1024
+                    width: 779
+                    layers: []
+                  prompt: "Create a modern, minimalist design variation"
+      responses:
+        "200":
+          description: Template variation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Successful template variation
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      optimizedJSON:
+                        sheet_id: 2944
+                        sheet_name: "MicoCraft"
+                        height: 1024
+                        width: 779
+                        layers: []
+                      imageUrl: "https://example.com/generated-template.png"
+                      processingTime: 12345
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /mcr/templateVariation:
     post:
@@ -1449,7 +830,10 @@ paths:
         
         This endpoint is used to check the status of jobs created by asynchronous operations such as:
         - `/mcr/templateVariation` - MCR template variation jobs
-        - `/aivision/adRefinement` - Ad refinement jobs
+        - `/aivision/autoBackgroundRemoval` - Background removal jobs
+        - `/aivision/humanGeneration` - Human generation jobs
+        - `/aivision/stockPhotoGeneration` - Stock photo generation jobs
+        - `/aivision/imageInpaintingRemoval` - Inpainting removal jobs
         
         The response includes:
         - Job-level information (job_id, status, job_type, batch_size)
@@ -1509,29 +893,6 @@ paths:
                           error_msg: null
                       created_at: "2025-12-23T03:06:38.482Z"
                       updated_at: "2025-12-23T03:06:41.858Z"
-                completed:
-                  summary: Job completed successfully
-                  value:
-                    status_code: 200
-                    message: "SUCCESS"
-                    result:
-                      job_id: "43a53966-adf9-4431-ae20-141d5d9c9f2e"
-                      status: "completed"
-                      job_type: "AD_REFINEMENT"
-                      batch_size: 1
-                      total_tasks: 1
-                      completed_tasks: 1
-                      failed_tasks: 0
-                      tasks:
-                        - task_id: "a180c051-31c9-46a8-91d3-7cdfb6c1b440"
-                          index: 0
-                          status: "completed"
-                          job_type: "AD_REFINEMENT"
-                          result: "https://mico-gen-ai-dev.s3.ap-northeast-1.amazonaws.com/openai-editing/823e0e06-c1c7-4de4-b9ed-a7202ad65fbd.png"
-                          processingTime: 39293
-                          error_msg: null
-                      created_at: "2025-12-23T18:16:25.892Z"
-                      updated_at: "2025-12-23T18:17:07.120Z"
                 template_variation_completed:
                   summary: Template variation job completed
                   description: Example of a completed TEMPLATE_VARIATION job where the result is a stringified JSON.
@@ -1735,12 +1096,12 @@ components:
           maximum: 10
           default: 3
           example: 3
-        accelerator:
+        model:
           type: string
-          enum: [low, medium, high]
-          description: GPU accelerator level
-          default: medium
-          example: medium
+          enum: [gemini, openai]
+          description: AI model to use
+          default: gemini
+          example: gemini
       required:
         - prompt
 
@@ -1778,12 +1139,12 @@ components:
           maximum: 10
           default: 3
           example: 3
-        accelerator:
+        model:
           type: string
-          enum: [low, medium, high]
-          description: GPU accelerator level
-          default: medium
-          example: medium
+          enum: [gemini, openai]
+          description: AI model to use
+          default: gemini
+          example: gemini
         promptEnhancer:
           type: boolean
           description: If true, enhances the prompt with OpenAI after translation

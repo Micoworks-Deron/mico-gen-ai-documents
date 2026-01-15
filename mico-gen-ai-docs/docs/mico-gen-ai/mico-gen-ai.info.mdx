@@ -6,7 +6,6 @@ sidebar_label: Introduction
 sidebar_position: 0
 hide_title: true
 custom_edit_url: null
-slug: introduction
 ---
 
 import ApiLogo from "@theme/ApiLogo";
@@ -33,23 +32,17 @@ import Export from "@theme/ApiExplorer/Export";
 Comprehensive AI Vision API for image processing and generation platforms.
 
 ## Features
+- **Template Variation**: Optimize and generate variations of design templates
 - **Background Removal**: Automatically remove backgrounds from images
-- **Object Extraction**: Extract objects using bounding boxes or point selection
 - **Human Generation**: Generate photorealistic human images from text prompts with detailed control options
 - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts and detailed control options
-- **Image Outpainting**: Extend images beyond their original boundaries
-- **Image Inpainting**: Fill in missing or damaged parts of images
 - **Inpainting Removal**: Remove objects from images using AI inpainting
-- **Ad Variation**: Generate ad variations with manual prompts or automatic analysis mode
-- **Template Variation**: Optimize and generate variations of design templates via asynchronous jobs
-- **Image Variations Recommendation**: Get AI-powered recommendations for image variations
 - **Image to Video**: Convert an uploaded image to a video
 - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
 
 ## Authentication
 All `/aivision/*` endpoints require authentication using one of the following methods:
 
-### Bearer Token Authentication
 Use your API key with Bearer format:
 ```
 Authorization: Bearer YOUR_API_KEY
@@ -58,22 +51,12 @@ Authorization: Bearer YOUR_API_KEY
 ## File Upload Limits
 - Maximum file size: 35MB
 - Supported formats: JPEG, PNG, WebP
-- Maximum files per request: 10
+- Maximum files per request: 6
 
 ## Services
-- **Mico (ComfyICU)**: Primary AI service for most operations
-- **Flux**: Alternative service for inpainting and outpainting
-- **OpenAI**: Advanced service for inpainting and outpainting
-
-## Rate Limits
-- Standard rate limiting applies
-- GPU accelerator options: low, medium, high
-
-## Known issue (Staging/Production TLS certificate)
-If you use the **Staging** / **Production** base URLs and see `ERR_CERT_COMMON_NAME_INVALID`, it’s a temporary certificate hostname mismatch.
-
-- For curl/Postman testing, you can temporarily use `curl --insecure (-k)` or disable SSL verification in Postman
-- For browser-based requests, TLS verification cannot be bypassed; wait for the certificate fix
+- **Gemini3.0**: Primary AI service for most operations
+- **OpenAI**: Alternative service for most operations
+- **Mico**: Alternative service for most operations
 
 ## Prompt Formats
 The API supports two prompt formats for generation endpoints:
@@ -93,19 +76,6 @@ The API supports two prompt formats for generation endpoints:
     "category": "illustration",
     "style": "realistic photography",
     "background": "natural garden setting",
-    "mood": "peaceful"
-  }
-}
-```
-
-### JSON Format (Metadata Only)
-```json
-{
-  "prompt": {
-    "text": "",
-    "category": "illustration",
-    "style": "Japanese Manga pop style",
-    "background": "urban cityscape",
     "mood": "peaceful"
   }
 }

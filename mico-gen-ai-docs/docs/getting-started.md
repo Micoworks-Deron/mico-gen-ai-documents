@@ -27,14 +27,6 @@ Use the correct base URL for the environment you’re calling:
 - **Staging**: `https://mico.gen.ai.stg-craft.mico.one`
 - **Production**: `https://mico.gen.ai.craft.mico.one`
 
-#### Known issue (Staging/Production TLS certificate)
-
-Currently, **Staging** and **Production** may return a browser error like `ERR_CERT_COMMON_NAME_INVALID` due to a certificate hostname mismatch.
-
-- For **temporary testing** with `curl`, add `--insecure` (or `-k`)
-- For **Postman**, disable **SSL certificate verification**
-- For **browser-based calls**, you generally cannot bypass TLS verification safely; wait for the certificate fix
-
 ### 4. Make Your First API Call
 
 Let's start with a simple background removal request:
@@ -66,21 +58,15 @@ All API responses follow a consistent JSON format:
 
 Mico Gen AI supports three powerful AI platforms:
 
-- **Mico (ComfyICU)**: Primary AI service for most operations
-- **Flux**: Alternative service for inpainting and outpainting
-- **OpenAI**: Advanced service for inpainting and outpainting
+- **Gemini3.0**: Primary AI service for most operations
+- **OpenAI**: Alternative service for most operations
+- **Mico**: Alternative service for most operations
 
 ## File Upload Limits
 
 - **Maximum file size**: 35MB
 - **Supported formats**: JPEG, PNG, WebP
-- **Maximum files per request**: 10
-
-## Rate Limits
-
-- Standard rate limiting applies to all endpoints
-- GPU accelerator options: low, medium, high
-- Rate limits vary by subscription plan
+- **Maximum batchSize per request**: 6
 
 ## Next Steps
 
