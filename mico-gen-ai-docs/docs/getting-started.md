@@ -7,7 +7,7 @@ Welcome to the Mico Gen AI API! This guide will help you get up and running with
 ### 1. Get Your API Key
 
 First, you'll need to obtain an API key to authenticate your requests:
-Apply a free API key from h.alan@mico-inc.com
+Apply a free API key from h.alan@mico-inc.com or l.deron@mico-inc.com
 
 ### 2. Authentication
 
@@ -16,8 +16,6 @@ All `/aivision/*` endpoints require authentication using Bearer token format:
 ```bash
 Authorization: Bearer YOUR_API_KEY
 ```
-
-**Note**: `/health` and `/documentation` endpoints are publicly accessible and do not require authentication.
 
 ### 3. Choose Environment (Base URL)
 
@@ -42,15 +40,44 @@ curl -X POST "$BASE_URL/aivision/autoBackgroundRemoval" \
 ### 5. Response Format
 
 All API responses follow a consistent JSON format:
-
+- Get get the unique job ID first
 ```json
 {
-  "success": true,
-  "data": {
-    "result_url": "https://storage.mico.ai/processed/image.png",
-    "processing_time": 2.3
-  },
-  "message": "Background removed successfully"
+    "status_code": 200,
+    "message": "SUCCESS",
+    "result": {
+        "job_id": "8014d750-c7cf-4cdf-9e8d-ca55433629db",
+        "status": "processing"
+    }
+}
+```
+
+- Use the unique job ID to retrieve the API response for each task
+```json
+{
+    "status_code": 200,
+    "message": "SUCCESS",
+    "result": {
+        "job_id": "8014d750-c7cf-4cdf-9e8d-ca55433629db",
+        "status": "processing",
+        "job_type": "AUTO_BACKGROUND_REMOVAL",
+        "batch_size": 1,
+        "total_tasks": 1,
+        "completed_tasks": 0,
+        "failed_tasks": 0,
+        "tasks": [
+            {
+                "task_id": "196c8c0f-09d7-4a90-ab61-7debc7ad4675",
+                "index": 0,
+                "status": "processing",
+                "job_type": "AUTO_BACKGROUND_REMOVAL",
+                "result": null,
+                "error_msg": null
+            }
+        ],
+        "created_at": "2026-01-16T04:19:03.254Z",
+        "updated_at": "2026-01-16T04:19:03.342Z"
+    }
 }
 ```
 
@@ -72,20 +99,11 @@ Mico Gen AI supports three powerful AI platforms:
 
 - Explore our [API Documentation](/docs/developers/mico-gen-ai/introduction) for detailed endpoint information
 - Browse our comprehensive API reference for specific use cases
-- Join our community for support and discussions
 
 ## Need Help?
-
 - Contact support at h.alan@mico-inc.com or l.deron@mico-inc.com
-- Join our community for support and discussions
 
 ## FAQ
 
 ### How do I get an API key?
 Apply for a free API key by contacting h.alan@mico-inc.com or l.deron@mico-inc.com
-
-### What file formats are supported?
-We support JPEG, PNG, and WebP formats with a maximum file size of 35MB.
-
-### What are the rate limits?
-Rate limits vary by subscription plan. Contact support for details about your specific plan.
