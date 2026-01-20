@@ -79,7 +79,312 @@ Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array conta
 <StatusCodes
   id={undefined}
   label={undefined}
-  responses={{"200":{"description":"Job status successfully retrieved","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":200},"message":{"type":"string","description":"Response message","example":"SUCCESS"},"result":{"description":"Detailed response data"}},"required":["status_code","message","result"],"title":"SuccessResponse"},"examples":{"processing":{"summary":"Job still processing","value":{"status_code":200,"message":"SUCCESS","result":{"job_id":"4110b319-12f1-426f-8844-483509cde46d","status":"processing","job_type":"TEMPLATE_VARIATION","batch_size":2,"total_tasks":2,"completed_tasks":0,"failed_tasks":0,"tasks":[{"task_id":"dbb0aa56-e291-4c2c-b7f1-e5634e391300","index":0,"status":"pending","job_type":"TEMPLATE_VARIATION","result":null,"processingTime":null,"error_msg":null},{"task_id":"a180c051-31c9-46a8-91d3-7cdfb6c1b440","index":1,"status":"processing","job_type":"TEMPLATE_VARIATION","result":null,"processingTime":null,"error_msg":null}],"created_at":"2025-12-23T03:06:38.482Z","updated_at":"2025-12-23T03:06:41.858Z"}}},"template_variation_completed":{"summary":"Template variation job completed","description":"Example of a completed TEMPLATE_VARIATION job where the result is a stringified JSON.","value":{"status_code":200,"message":"SUCCESS","result":{"job_id":"663a9767-a5a3-450b-b0ca-44cdfe6c1f9e","status":"completed","job_type":"TEMPLATE_VARIATION","batch_size":2,"total_tasks":2,"completed_tasks":2,"failed_tasks":0,"tasks":[{"task_id":"03a1db7f-84d6-4e4b-9d32-e7cdb6f3ffd0","index":0,"status":"completed","job_type":"TEMPLATE_VARIATION","result":"{\"sheet_id\":2944,\"sheet_name\":\"MicoCraft\",\"height\":1024,\"width\":779,\"layers\":[{\"id\":24834,\"image_type\":\"image\",\"name\":\"headline_decoration_right\",\"url_path\":\"https://...png\"},...]}","processingTime":82745,"error_msg":null},{"task_id":"873c4a95-9a73-45bb-bcde-55c3a4a6be0f","index":1,"status":"completed","job_type":"TEMPLATE_VARIATION","result":"{\"sheet_id\":2944,\"sheet_name\":\"MicoCraft\",\"height\":1024,\"width\":779,\"layers\":[{\"id\":24834,\"image_type\":\"image\",\"name\":\"headline_decoration_right\",\"url_path\":\"https://...png\"},...]}","processingTime":82555,"error_msg":null}],"created_at":"2025-12-25T05:42:37.954Z","updated_at":"2025-12-25T05:46:49.617Z"}}}}}}},"401":{"description":"Unauthorized - invalid or missing authentication","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"missing_auth":{"summary":"Missing authorization header","value":{"status_code":401,"message":"UNAUTHORIZED","result":null}},"invalid_token":{"summary":"Invalid token","value":{"status_code":401,"message":"UNAUTHORIZED","result":null}}}}}},"404":{"description":"Job not found","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"not_found":{"summary":"Job not found","value":{"status_code":404,"message":"Job not found","result":null}}}}}},"500":{"description":"Internal server error","content":{"application/json":{"schema":{"type":"object","properties":{"status_code":{"type":"integer","description":"HTTP status code","example":400},"message":{"type":"string","description":"Error message","example":"BAD_REQUEST"},"result":{"type":null,"description":"Null result for errors"}},"required":["status_code","message","result"],"title":"ErrorResponse"},"examples":{"server_error":{"summary":"Internal server error","value":{"status_code":500,"message":"INTERNAL_SERVER_ERROR","result":null}}}}}}}}
+  responses={{
+    "200": {
+      "description": "Job status successfully retrieved",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 200
+              },
+              "message": {
+                "type": "string",
+                "description": "Response message",
+                "example": "SUCCESS"
+              },
+              "result": { "description": "Detailed response data" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "SuccessResponse"
+          },
+          "examples": {
+            "processing": {
+              "summary": "Job still processing",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "4110b319-12f1-426f-8844-483509cde46d",
+                  "status": "processing",
+                  "job_type": "TEMPLATE_VARIATION",
+                  "batch_size": 2,
+                  "total_tasks": 2,
+                  "completed_tasks": 0,
+                  "failed_tasks": 0,
+                  "tasks": [
+                    {
+                      "task_id": "dbb0aa56-e291-4c2c-b7f1-e5634e391300",
+                      "index": 0,
+                      "status": "pending",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": null,
+                      "processingTime": null,
+                      "error_msg": null
+                    },
+                    {
+                      "task_id": "a180c051-31c9-46a8-91d3-7cdfb6c1b440",
+                      "index": 1,
+                      "status": "processing",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": null,
+                      "processingTime": null,
+                      "error_msg": null
+                    }
+                  ],
+                  "created_at": "2025-12-23T03:06:38.482Z",
+                  "updated_at": "2025-12-23T03:06:41.858Z"
+                }
+              }
+            },
+            "template_variation_completed": {
+              "summary": "Template variation job completed",
+              "description": "Example of a completed TEMPLATE_VARIATION job where the result is a stringified JSON.",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "663a9767-a5a3-450b-b0ca-44cdfe6c1f9e",
+                  "status": "completed",
+                  "job_type": "TEMPLATE_VARIATION",
+                  "batch_size": 2,
+                  "total_tasks": 2,
+                  "completed_tasks": 2,
+                  "failed_tasks": 0,
+                  "tasks": [
+                    {
+                      "task_id": "03a1db7f-84d6-4e4b-9d32-e7cdb6f3ffd0",
+                      "index": 0,
+                      "status": "completed",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": "{\"sheet_id\":2944,\"sheet_name\":\"MicoCraft\",\"height\":1024,\"width\":779,\"layers\":[{\"id\":24834,\"image_type\":\"image\",\"name\":\"headline_decoration_right\",\"url_path\":\"https://...png\"},...]}",
+                      "processingTime": 82745,
+                      "error_msg": null
+                    },
+                    {
+                      "task_id": "873c4a95-9a73-45bb-bcde-55c3a4a6be0f",
+                      "index": 1,
+                      "status": "completed",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": "{\"sheet_id\":2944,\"sheet_name\":\"MicoCraft\",\"height\":1024,\"width\":779,\"layers\":[{\"id\":24834,\"image_type\":\"image\",\"name\":\"headline_decoration_right\",\"url_path\":\"https://...png\"},...]}",
+                      "processingTime": 82555,
+                      "error_msg": null
+                    }
+                  ],
+                  "created_at": "2025-12-25T05:42:37.954Z",
+                  "updated_at": "2025-12-25T05:46:49.617Z"
+                }
+              }
+            },
+            "auto_background_removal_completed": {
+              "summary": "Auto background removal (autobackgroundremoval) job completed",
+              "description": "Example of a completed `/aivision/autoBackgroundRemoval` job where each task result is a URL.",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "0d5c5f0f-7f78-4c6b-a4f4-3e95c8d2d8c7",
+                  "status": "completed",
+                  "job_type": "AUTO_BACKGROUND_REMOVAL",
+                  "batch_size": 1,
+                  "total_tasks": 1,
+                  "completed_tasks": 1,
+                  "failed_tasks": 0,
+                  "tasks": [
+                    {
+                      "task_id": "f2d404cb-7d9a-4f6a-9b56-8a793d5a335b",
+                      "index": 0,
+                      "status": "completed",
+                      "job_type": "AUTO_BACKGROUND_REMOVAL",
+                      "result": "https://.../background-removed.png",
+                      "processingTime": 12450,
+                      "error_msg": null
+                    }
+                  ],
+                  "created_at": "2025-12-25T06:10:12.112Z",
+                  "updated_at": "2025-12-25T06:10:28.901Z"
+                }
+              }
+            },
+            "human_generation_completed": {
+              "summary": "Human generation (generateHuman Image) job completed",
+              "description": "Example of a completed `/aivision/humanGeneration` job where each task result is a URL.",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "2d0b6e3a-6b1a-4b1a-8c6f-0a3d8a5f3a4e",
+                  "status": "completed",
+                  "job_type": "HUMAN_GENERATION",
+                  "batch_size": 2,
+                  "total_tasks": 2,
+                  "completed_tasks": 2,
+                  "failed_tasks": 0,
+                  "tasks": [
+                    {
+                      "task_id": "aa3d4d2a-7f2b-4e47-9b4b-9a05e3b8c8f1",
+                      "index": 0,
+                      "status": "completed",
+                      "job_type": "HUMAN_GENERATION",
+                      "result": "https://.../human-0.png",
+                      "processingTime": 30211,
+                      "error_msg": null
+                    },
+                    {
+                      "task_id": "0c7c74a4-5fd6-4d49-9bfb-1f2a7a6d9e22",
+                      "index": 1,
+                      "status": "completed",
+                      "job_type": "HUMAN_GENERATION",
+                      "result": "https://.../human-1.png",
+                      "processingTime": 29844,
+                      "error_msg": null
+                    }
+                  ],
+                  "created_at": "2025-12-25T06:22:00.010Z",
+                  "updated_at": "2025-12-25T06:22:42.331Z"
+                }
+              }
+            },
+            "remove_objects_completed": {
+              "summary": "Remove objects (remove-objects) job completed",
+              "description": "Example of a completed `/aivision/imageInpaintingRemoval` job where each task result is a URL.",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "7c4b4e6e-8d5d-4b0b-9a61-1f2e3d4c5b6a",
+                  "status": "completed",
+                  "job_type": "IMAGE_INPAINTING_REMOVAL",
+                  "batch_size": 1,
+                  "total_tasks": 1,
+                  "completed_tasks": 1,
+                  "failed_tasks": 0,
+                  "tasks": [
+                    {
+                      "task_id": "b1f2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+                      "index": 0,
+                      "status": "completed",
+                      "job_type": "IMAGE_INPAINTING_REMOVAL",
+                      "result": "https://.../inpainting-removed.png",
+                      "processingTime": 22109,
+                      "error_msg": null
+                    }
+                  ],
+                  "created_at": "2025-12-25T06:35:21.550Z",
+                  "updated_at": "2025-12-25T06:35:43.990Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "401": {
+      "description": "Unauthorized - invalid or missing authentication",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 400
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "BAD_REQUEST"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "missing_auth": {
+              "summary": "Missing authorization header",
+              "value": { "status_code": 401, "message": "UNAUTHORIZED", "result": null }
+            },
+            "invalid_token": {
+              "summary": "Invalid token",
+              "value": { "status_code": 401, "message": "UNAUTHORIZED", "result": null }
+            }
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Job not found",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 400
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "BAD_REQUEST"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "not_found": {
+              "summary": "Job not found",
+              "value": { "status_code": 404, "message": "Job not found", "result": null }
+            }
+          }
+        }
+      }
+    },
+    "500": {
+      "description": "Internal server error",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 400
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "BAD_REQUEST"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "server_error": {
+              "summary": "Internal server error",
+              "value": {
+                "status_code": 500,
+                "message": "INTERNAL_SERVER_ERROR",
+                "result": null
+              }
+            }
+          }
+        }
+      }
+    }
+  }}
 >
   
 </StatusCodes>
