@@ -840,7 +840,7 @@ paths:
                       updated_at: "2025-12-25T05:46:49.617Z"
                 canceled_job:
                   summary: Job was canceled
-                  description: Example of a canceled job with some tasks that were canceled before completion.
+                  description: Example of a canceled job where all tasks are updated to canceled status.
                   value:
                     status_code: 200
                     message: "SUCCESS"
@@ -850,17 +850,17 @@ paths:
                       job_type: "TEMPLATE_VARIATION"
                       batch_size: 3
                       total_tasks: 3
-                      completed_tasks: 1
+                      completed_tasks: 0
                       failed_tasks: 0
-                      canceled_tasks: 2
+                      canceled_tasks: 3
                       tasks:
                         - task_id: "dbb0aa56-e291-4c2c-b7f1-e5634e391300"
                           index: 0
-                          status: "completed"
+                          status: "canceled"
                           job_type: "TEMPLATE_VARIATION"
-                          result: '{"sheet_id":2944,"sheet_name":"MicoCraft","height":1024,"width":779,"layers":[...]}'
-                          processingTime: 45000
-                          error_msg: null
+                          result: null
+                          processingTime: null
+                          error_msg: "Task was canceled"
                         - task_id: "a180c051-31c9-46a8-91d3-7cdfb6c1b440"
                           index: 1
                           status: "canceled"
@@ -927,13 +927,13 @@ paths:
     post:
       summary: Cancel a job
       description: |
-        Cancel a pending or processing job and all its associated tasks.
+        Cancel a job and all its associated tasks.
 
         **Important Notes:**
-        - Only jobs with status `pending` or `processing` can be canceled
-        - Jobs that are already `completed`, `failed`, or `canceled` cannot be canceled
-        - When a job is canceled, all associated tasks that are not yet completed will also be marked as canceled
-        - Tasks that are currently being processed by a worker may still complete before the cancellation takes effect
+        - Any job can be canceled regardless of its current status (`pending`, `processing`, or `completed`)
+        - Jobs that are already `canceled` cannot be canceled again
+        - When a job is canceled, **all associated tasks will be updated to `canceled` status**, including tasks that were already completed
+        - The job status will be updated to `canceled`
       tags:
         - Mico Gen AI
       security:
@@ -965,24 +965,12 @@ paths:
                       status: "canceled"
                       canceled_tasks: 3
         "400":
-          description: Cannot cancel job - job is already completed, failed, or canceled
+          description: Cannot cancel job - job is already canceled
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
-                already_completed:
-                  summary: Job already completed
-                  value:
-                    status_code: 400
-                    message: "Cannot cancel job: job is already completed"
-                    result: null
-                already_failed:
-                  summary: Job already failed
-                  value:
-                    status_code: 400
-                    message: "Cannot cancel job: job is already failed"
-                    result: null
                 already_canceled:
                   summary: Job already canceled
                   value:

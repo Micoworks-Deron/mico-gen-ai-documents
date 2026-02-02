@@ -9,7 +9,11 @@ hide_title: true
 custom_edit_url: null
 ---
 
+import ApiLogo from "@theme/ApiLogo";
 import Heading from "@theme/Heading";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+import Export from "@theme/ApiExplorer/Export";
 
 <span
   className={"theme-doc-version-badge badge badge--secondary"}
@@ -24,9 +28,11 @@ import Heading from "@theme/Heading";
 >
 </Heading>
 
-Comprehensive AI Vision API for design template and image processing, generation and variation.
 
-## Features (production)
+
+Comprehensive AI Vision API for image processing and generation platforms.
+
+## Features
 - **Template Variation**: Optimize and generate variations of design templates
 - **Background Removal**: Automatically remove backgrounds from images
 - **Human Generation**: Generate photorealistic human images from text prompts with detailed control options
@@ -34,65 +40,37 @@ Comprehensive AI Vision API for design template and image processing, generation
 - **Inpainting Removal**: Remove objects from images using AI inpainting
 - **Image to Video**: Convert an uploaded image to a video
 - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
-
-## Base URLs (environments)
-- **Development**: `https://api-mico-gen-ai.dev-craft.mico.one`
-- **Staging**: `https://mico.gen.ai.stg-craft.mico.one`
-- **Production**: `https://mico.gen.ai.craft.mico.one`
-
-## Quickstart (cURL)
-Generate a job (example: background removal), then poll for status.
-
-```bash
-curl --location 'https://mico.gen.ai.craft.mico.one/aivision/autoBackgroundRemoval' \
-  --header 'Authorization: Bearer YOUR_API_KEY' \
-  --form 'file=@/path/to/image.png'
-```
-
-```bash
-curl --location 'https://mico.gen.ai.craft.mico.one/aivision/jobs/{job_id}' \
-  --header 'Authorization: Bearer YOUR_API_KEY'
-```
+- **Job Cancellation**: Cancel a job in progress
 
 ## Authentication
-All `/aivision/*` endpoints require Bearer authentication:
+All `/aivision/*` endpoints require authentication using one of the following methods:
 
-```bash
+Use your API key with Bearer format:
+```
 Authorization: Bearer YOUR_API_KEY
 ```
 
-## Common workflow (sync vs async)
-- **Async (returns `job_id`)**: most compute-heavy operations. Use **Get job status** to retrieve results.
+## File Upload Limits
+- Maximum file size: 35MB
+- Supported formats: JPEG, PNG, WebP
+- Maximum files per request: 6
 
-## API reference pages
-- **Background removal**: [Auto background removal](/docs/developers/mico-gen-ai/auto-background-removal)
-- **Human generation**: [Generate human images](/docs/developers/mico-gen-ai/generate-human-images)
-- **Stock photo generation**: [Generate stock photo images](/docs/developers/mico-gen-ai/generate-stock-photo-images)
-- **Inpainting removal**: [Remove objects using inpainting](/docs/developers/mico-gen-ai/remove-objects-using-inpainting)
-- **Image to video**: [Image to Video](/docs/developers/mico-gen-ai/image-to-video)
-- **Template variation (async)**: [Template variation optimization](/docs/developers/mico-gen-ai/template-variation-mcr)
-- **Job status**: [Get job status](/docs/developers/mico-gen-ai/get-job-status)
+## Services
+- **Gemini3.0**: Primary AI service for most operations
+- **OpenAI**: Alternative service for most operations
+- **Mico**: Alternative service for most operations
 
-## File upload limits
-- Maximum file size: **35MB**
-- Supported formats: **JPEG, PNG, WebP**
-- Maximum files per request: **6**
+## Prompt Formats
+The API supports two prompt formats for generation endpoints:
 
-## Prompt formats
-Generation endpoints support:
-- **String prompt** (simple)
-- **JSON prompt object** (advanced control). The `text` field is optional and may be empty.
-
-Example (simple):
-
+### String Format (Simple)
 ```json
 {
   "prompt": "A beautiful woman in a garden"
 }
 ```
 
-Example (advanced):
-
+### JSON Format (Advanced)
 ```json
 {
   "prompt": {
@@ -105,11 +83,79 @@ Example (advanced):
 }
 ```
 
-## Services
-Depending on the endpoint/config, requests may be processed by:
-- **Gemini3.0** (primary)
-- **OpenAI** (alternative)
-- **Mico** (alternative)
+The JSON format allows for detailed control over image generation by combining multiple properties into a single, well-formatted prompt. The `text` property is optional and can be empty, allowing for metadata-only prompts.
 
-## License
-- **ISC**: `https://opensource.org/licenses/ISC`
+
+<div
+  style={{"marginBottom":"2rem"}}
+>
+  <Heading
+    id={"authentication"}
+    as={"h2"}
+    className={"openapi-tabs__heading"}
+    children={"Authentication"}
+  >
+  </Heading><SchemaTabs
+    className={"openapi-tabs__security-schemes"}
+  >
+    <TabItem
+      label={"HTTP: Bearer Auth"}
+      value={"BearerAuth"}
+    >
+      
+      
+      Bearer token authentication. Supports two formats:
+      1. Bearer with API key: `Authorization: Bearer YOUR_API_KEY`
+      
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                http
+              </td>
+            </tr><tr>
+              <th>
+                HTTP Authorization Scheme:
+              </th><td>
+                bearer
+              </td>
+            </tr><tr>
+              <th>
+                Bearer format:
+              </th><td>
+                JWT
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem>
+  </SchemaTabs>
+</div><div
+  style={{"display":"flex","flexDirection":"column","marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    Contact
+  </h3><span>
+    Mico GenAI services API Support: [l.deron@mico-inc.com](mailto:l.deron@mico-inc.com)
+  </span>
+</div><div
+  style={{"marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    License
+  </h3><a
+    href={"https://opensource.org/licenses/ISC"}
+  >
+    ISC
+  </a>
+</div>
+      

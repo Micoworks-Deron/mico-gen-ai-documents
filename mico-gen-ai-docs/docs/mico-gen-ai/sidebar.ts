@@ -46,6 +46,12 @@ const sidebar: SidebarsConfig = {
           label: "Get job status",
           className: "api-method get",
         },
+        {
+          type: "doc",
+          id: "mico-gen-ai/cancel-a-job",
+          label: "Cancel a job",
+          className: "api-method post",
+        },
       ],
     },
     {
