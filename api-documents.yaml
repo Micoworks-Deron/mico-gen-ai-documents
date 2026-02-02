@@ -12,6 +12,7 @@ info:
     - **Inpainting Removal**: Remove objects from images using AI inpainting
     - **Image to Video**: Convert an uploaded image to a video
     - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
+    - **Job Cancellation**: Cancel a job in progress
 
     ## Authentication
     All `/aivision/*` endpoints require authentication using one of the following methods:
@@ -838,8 +839,8 @@ paths:
         The response includes:
         - Job-level information (job_id, status, job_type, batch_size)
         - Task-level information (task_id, index, status, result URL or JSON string, processingTime, error_msg)
-        - Job-Status category (completed, failed, pending, processing)
-        - Progress tracking (total_tasks, completed_tasks, failed_tasks)
+        - Job-Status category (completed, failed, pending, processing, canceled)
+        - Progress tracking (total_tasks, completed_tasks, failed_tasks, canceled_tasks)
         
         Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array contains a stringified JSON of the optimized template instead of a URL.
       tags:
@@ -924,6 +925,157 @@ paths:
                           error_msg: null
                       created_at: "2025-12-25T05:42:37.954Z"
                       updated_at: "2025-12-25T05:46:49.617Z"
+                canceled_job:
+                  summary: Job was canceled
+                  description: Example of a canceled job with some tasks that were canceled before completion.
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "canceled"
+                      job_type: "TEMPLATE_VARIATION"
+                      batch_size: 3
+                      total_tasks: 3
+                      completed_tasks: 1
+                      failed_tasks: 0
+                      canceled_tasks: 2
+                      tasks:
+                        - task_id: "dbb0aa56-e291-4c2c-b7f1-e5634e391300"
+                          index: 0
+                          status: "completed"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: '{"sheet_id":2944,"sheet_name":"MicoCraft","height":1024,"width":779,"layers":[...]}'
+                          processingTime: 45000
+                          error_msg: null
+                        - task_id: "a180c051-31c9-46a8-91d3-7cdfb6c1b440"
+                          index: 1
+                          status: "canceled"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: null
+                          processingTime: null
+                          error_msg: "Task was canceled"
+                        - task_id: "b290d162-42da-57b9-a2e4-8defa7d2c551"
+                          index: 2
+                          status: "canceled"
+                          job_type: "TEMPLATE_VARIATION"
+                          result: null
+                          processingTime: null
+                          error_msg: "Task was canceled"
+                      created_at: "2025-12-23T03:06:38.482Z"
+                      updated_at: "2025-12-23T03:08:15.123Z"
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                invalid_token:
+                  summary: Invalid token
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                not_found:
+                  summary: Job not found
+                  value:
+                    status_code: 404
+                    message: "Job not found"
+                    result: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
+  /aivision/jobs/{job_id}/cancel:
+    post:
+      summary: Cancel a job
+      description: |
+        Cancel a pending or processing job and all its associated tasks.
+
+        **Important Notes:**
+        - Only jobs with status `pending` or `processing` can be canceled
+        - Jobs that are already `completed`, `failed`, or `canceled` cannot be canceled
+        - When a job is canceled, all associated tasks that are not yet completed will also be marked as canceled
+        - Tasks that are currently being processed by a worker may still complete before the cancellation takes effect
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: The unique ID of the job to cancel
+          schema:
+            type: string
+            format: uuid
+            example: "4110b319-12f1-426f-8844-483509cde46d"
+      responses:
+        "200":
+          description: Job canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Job canceled successfully
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "canceled"
+                      canceled_tasks: 3
+        "400":
+          description: Cannot cancel job - job is already completed, failed, or canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                already_completed:
+                  summary: Job already completed
+                  value:
+                    status_code: 400
+                    message: "Cannot cancel job: job is already completed"
+                    result: null
+                already_failed:
+                  summary: Job already failed
+                  value:
+                    status_code: 400
+                    message: "Cannot cancel job: job is already failed"
+                    result: null
+                already_canceled:
+                  summary: Job already canceled
+                  value:
+                    status_code: 400
+                    message: "Cannot cancel job: job is already canceled"
+                    result: null
         "401":
           description: Unauthorized - invalid or missing authentication
           content:

@@ -1,0 +1,254 @@
+---
+id: cancel-job
+title: "Cancel a job"
+description: "Cancel a pending or processing job and all its associated tasks."
+sidebar_label: "Cancel a job"
+hide_title: true
+hide_table_of_contents: true
+sidebar_class_name: "post api-method"
+info_path: docs/developers/mico-gen-ai/mico-gen-ai
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Cancel a job"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/aivision/jobs/{job_id}/cancel"}
+  context={"endpoint"}
+>
+
+</MethodEndpoint>
+
+
+
+Cancel a pending or processing job and all its associated tasks.
+
+**Important Notes:**
+- Only jobs with status `pending` or `processing` can be canceled
+- Jobs that are already `completed`, `failed`, or `canceled` cannot be canceled
+- When a job is canceled, all associated tasks that are not yet completed will also be marked as canceled
+- Tasks that are currently being processed by a worker may still complete before the cancellation takes effect
+
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"job_id","in":"path","required":true,"description":"The unique ID of the job to cancel","schema":{"type":"string","format":"uuid","example":"4110b319-12f1-426f-8844-483509cde46d"}}]}
+>
+
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{
+    "200": {
+      "description": "Job canceled successfully",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 200
+              },
+              "message": {
+                "type": "string",
+                "description": "Response message",
+                "example": "SUCCESS"
+              },
+              "result": { "description": "Detailed response data" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "SuccessResponse"
+          },
+          "examples": {
+            "success": {
+              "summary": "Job canceled successfully",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "4110b319-12f1-426f-8844-483509cde46d",
+                  "status": "canceled",
+                  "canceled_tasks": 3
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "400": {
+      "description": "Cannot cancel job - job is already completed, failed, or canceled",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 400
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "BAD_REQUEST"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "already_completed": {
+              "summary": "Job already completed",
+              "value": { "status_code": 400, "message": "Cannot cancel job: job is already completed", "result": null }
+            },
+            "already_failed": {
+              "summary": "Job already failed",
+              "value": { "status_code": 400, "message": "Cannot cancel job: job is already failed", "result": null }
+            },
+            "already_canceled": {
+              "summary": "Job already canceled",
+              "value": { "status_code": 400, "message": "Cannot cancel job: job is already canceled", "result": null }
+            }
+          }
+        }
+      }
+    },
+    "401": {
+      "description": "Unauthorized - invalid or missing authentication",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 401
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "UNAUTHORIZED"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "missing_auth": {
+              "summary": "Missing authorization header",
+              "value": { "status_code": 401, "message": "UNAUTHORIZED", "result": null }
+            },
+            "invalid_token": {
+              "summary": "Invalid token",
+              "value": { "status_code": 401, "message": "UNAUTHORIZED", "result": null }
+            }
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Job not found",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 404
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "Job not found"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "not_found": {
+              "summary": "Job not found",
+              "value": { "status_code": 404, "message": "Job not found", "result": null }
+            }
+          }
+        }
+      }
+    },
+    "500": {
+      "description": "Internal server error",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "example": 500
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message",
+                "example": "INTERNAL_SERVER_ERROR"
+              },
+              "result": { "type": null, "description": "Null result for errors" }
+            },
+            "required": ["status_code", "message", "result"],
+            "title": "ErrorResponse"
+          },
+          "examples": {
+            "server_error": {
+              "summary": "Internal server error",
+              "value": {
+                "status_code": 500,
+                "message": "INTERNAL_SERVER_ERROR",
+                "result": null
+              }
+            }
+          }
+        }
+      }
+    }
+  }}
+>
+
+</StatusCodes>
