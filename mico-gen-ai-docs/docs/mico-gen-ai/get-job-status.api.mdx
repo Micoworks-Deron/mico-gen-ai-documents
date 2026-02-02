@@ -49,8 +49,8 @@ This endpoint is used to check the status of jobs created by asynchronous operat
 The response includes:
 - Job-level information (job_id, status, job_type, batch_size)
 - Task-level information (task_id, index, status, result URL or JSON string, processingTime, error_msg)
-- Job-Status category (completed, failed, pending, processing)
-- Progress tracking (total_tasks, completed_tasks, failed_tasks)
+- Job-Status category (completed, failed, pending, processing, canceled)
+- Progress tracking (total_tasks, completed_tasks, failed_tasks, canceled_tasks)
 
 Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array contains a stringified JSON of the optimized template instead of a URL.
 
@@ -276,6 +276,55 @@ Note: For `TEMPLATE_VARIATION` jobs, the `result` field in the tasks array conta
                   ],
                   "created_at": "2025-12-25T06:35:21.550Z",
                   "updated_at": "2025-12-25T06:35:43.990Z"
+                }
+              }
+            },
+            "canceled_job": {
+              "summary": "Job was canceled",
+              "description": "Example of a canceled job with some tasks that were canceled before completion.",
+              "value": {
+                "status_code": 200,
+                "message": "SUCCESS",
+                "result": {
+                  "job_id": "4110b319-12f1-426f-8844-483509cde46d",
+                  "status": "canceled",
+                  "job_type": "TEMPLATE_VARIATION",
+                  "batch_size": 3,
+                  "total_tasks": 3,
+                  "completed_tasks": 1,
+                  "failed_tasks": 0,
+                  "canceled_tasks": 2,
+                  "tasks": [
+                    {
+                      "task_id": "dbb0aa56-e291-4c2c-b7f1-e5634e391300",
+                      "index": 0,
+                      "status": "completed",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": "{\"sheet_id\":2944,\"sheet_name\":\"MicoCraft\",\"height\":1024,\"width\":779,\"layers\":[...]}",
+                      "processingTime": 45000,
+                      "error_msg": null
+                    },
+                    {
+                      "task_id": "a180c051-31c9-46a8-91d3-7cdfb6c1b440",
+                      "index": 1,
+                      "status": "canceled",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": null,
+                      "processingTime": null,
+                      "error_msg": "Task was canceled"
+                    },
+                    {
+                      "task_id": "b290d162-42da-57b9-a2e4-8defa7d2c551",
+                      "index": 2,
+                      "status": "canceled",
+                      "job_type": "TEMPLATE_VARIATION",
+                      "result": null,
+                      "processingTime": null,
+                      "error_msg": "Task was canceled"
+                    }
+                  ],
+                  "created_at": "2025-12-23T03:06:38.482Z",
+                  "updated_at": "2025-12-23T03:08:15.123Z"
                 }
               }
             }
