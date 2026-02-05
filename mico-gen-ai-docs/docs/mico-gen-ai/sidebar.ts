@@ -60,6 +60,12 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
+          id: "mico-gen-ai/ad-variation",
+          label: "Ad Variation (Manual/Auto Mode)",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
           id: "mico-gen-ai/remove-objects-using-inpainting",
           label: "Remove objects using inpainting",
           className: "api-method post",
