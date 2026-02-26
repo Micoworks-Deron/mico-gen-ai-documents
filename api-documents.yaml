@@ -382,6 +382,7 @@ paths:
   /aivision/adVariation:
     post:
       summary: Ad Variation (Manual/Auto Mode)
+      operationId: ad-variation
       description: |
         Generate ad variation with manual prompt or auto analysis mode.
         This is an asynchronous operation that returns a job_id. Use the `/aivision/jobs/:job_id` endpoint to check the status and retrieve results.
@@ -1441,7 +1442,7 @@ components:
           type: integer
           description: Number of images to generate
           minimum: 1
-          maximum: 10
+          maximum: 6
           default: 3
           example: 3
         model:
@@ -1490,7 +1491,7 @@ components:
           type: integer
           description: Number of images to generate
           minimum: 1
-          maximum: 10
+          maximum: 6
           default: 3
           example: 3
         model:
