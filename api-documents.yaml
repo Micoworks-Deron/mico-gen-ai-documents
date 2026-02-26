@@ -384,6 +384,8 @@ paths:
       summary: Ad Variation (Manual/Auto Mode)
       description: |
         Generate ad variation with manual prompt or auto analysis mode.
+        This is an asynchronous operation that returns a job_id. Use the `/aivision/jobs/:job_id` endpoint to check the status and retrieve results.
+        When batchSize is provided, creates multiple tasks per image (e.g., batchSize=2 creates 2 tasks with the same job_id but different task_ids).
 
         **Modes:**
         - `manual`: Provide a custom prompt to guide the ad variation generation
@@ -431,6 +433,13 @@ paths:
                 metadata:
                   type: string
                   description: Additional metadata for the request (optional, JSON string)
+                batchSize:
+                  type: integer
+                  description: Number of tasks to create per image (optional, defaults to 1). When batchSize > 1, multiple tasks are created with the same job_id but different task_ids and sequential indices.
+                  minimum: 1
+                  maximum: 6
+                  default: 1
+                  example: 2
             examples:
               manual_mode:
                 summary: Manual mode with custom prompt
@@ -454,33 +463,29 @@ paths:
                   prompt: "Match the style of the reference image"
                   image: "ad_image.jpg"
                   ref_image: "reference_style.jpg"
+              batch_processing:
+                summary: Batch processing
+                description: Create multiple tasks (batchSize=3) for the same image
+                value:
+                  mode: "auto"
+                  image: "ad_image.jpg"
+                  batchSize: 3
       responses:
         "200":
-          description: Ad variation generated successfully
+          description: Ad variation job queued successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status_code:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: "SUCCESS"
-                  result:
-                    type: array
-                    items:
-                      type: string
-                    description: Array of generated image URLs
+                $ref: "#/components/schemas/SuccessResponse"
               examples:
                 success:
-                  summary: Successful ad variation
+                  summary: Successful job creation
                   value:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      - "https://s3.amazonaws.com/bucket/ad-variation/generated-1.png"
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      status: "processing"
         "400":
           description: Bad request - missing required input
           content:
@@ -892,6 +897,7 @@ paths:
         
         This endpoint is used to check the status of jobs created by asynchronous operations such as:
         - `/mcr/templateVariation` - MCR template variation jobs
+        - `/aivision/adVariation` - Ad variation jobs
         - `/aivision/autoBackgroundRemoval` - Background removal jobs
         - `/aivision/humanGeneration` - Human generation jobs
         - `/aivision/stockPhotoGeneration` - Stock photo generation jobs
@@ -1010,6 +1016,37 @@ paths:
                           error_msg: null
                       created_at: "2025-12-25T06:10:12.112Z"
                       updated_at: "2025-12-25T06:10:28.901Z"
+                ad_variation_completed:
+                  summary: Ad variation job completed
+                  description: Example of a completed `/aivision/adVariation` job where each task result is an array of URLs.
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                      status: "completed"
+                      job_type: "AD_VARIATION"
+                      batch_size: 2
+                      total_tasks: 2
+                      completed_tasks: 2
+                      failed_tasks: 0
+                      tasks:
+                        - task_id: "11111111-2222-3333-4444-555555555555"
+                          index: 0
+                          status: "completed"
+                          job_type: "AD_VARIATION"
+                          result: ["https://.../ad-variation-0.png"]
+                          processingTime: null
+                          error_msg: null
+                        - task_id: "66666666-7777-8888-9999-000000000000"
+                          index: 1
+                          status: "completed"
+                          job_type: "AD_VARIATION"
+                          result: ["https://.../ad-variation-1.png"]
+                          processingTime: null
+                          error_msg: null
+                      created_at: "2026-02-26T03:10:00.000Z"
+                      updated_at: "2026-02-26T03:12:30.000Z"
                 human_generation_completed:
                   summary: Human generation job completed
                   description: Example of a completed `/aivision/humanGeneration` job where each task result is a URL.
@@ -1413,6 +1450,12 @@ components:
           description: AI model to use
           default: gemini
           example: gemini
+        aspectRatio:
+          type: string
+          enum: ['1:1', '3:4', '4:3', '9:16', '16:9']
+          description: Aspect ratio for image generation. Width and height will be auto-corrected to match this ratio.
+          default: '1:1'
+          example: '1:1'
       required:
         - prompt
 
@@ -1461,6 +1504,12 @@ components:
           description: If true, enhances the prompt with OpenAI after translation
           default: false
           example: false
+        aspectRatio:
+          type: string
+          enum: ['1:1', '3:4', '4:3', '9:16', '16:9']
+          description: Aspect ratio for image generation. Width and height will be auto-corrected to match this ratio.
+          default: '1:1'
+          example: '1:1'
       required:
         - prompt
 
