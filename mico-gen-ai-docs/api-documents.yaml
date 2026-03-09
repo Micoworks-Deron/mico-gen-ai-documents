@@ -79,6 +79,115 @@ tags:
     description: Authentication and token management endpoints
 
 paths:
+  /aivision/textVariation:
+    post:
+      summary: Text Variation (Manual/Auto Mode)
+      description: |
+        Optimize ad text layers with manual prompt or auto analysis mode.
+        
+        **Important Logic Constraints:**
+        - When `mode` is **"auto"**, the `refImage` parameter is **REQUIRED** to analyze the visual context.
+        - When `mode` is **"manual"**, the `prompt` parameter is **REQUIRED**.
+      tags:
+        - Mico Gen AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - mode
+                - textLayers
+              properties:
+                mode:
+                  type: string
+                  enum: ["manual", "auto"]
+                  description: Mode of variation. 'auto' requires 'refImage', and 'manual' requires 'prompt'.
+                textLayers:
+                  type: string
+                  description: JSON string array of TextLayer objects. Must be a valid JSON array.
+                refImage:
+                  type: string
+                  format: binary
+                  description: Reference image file for analyzing visual context. **Required if mode is 'auto'**.
+                prompt:
+                  type: string
+                  description: Manual prompt for text optimization. **Required if mode is 'manual'**.
+                autoOption:
+                  type: string
+                  description: |
+                    Automatic option to direct the text variation style. Defaults to "improve".
+                    Supported values:
+                    - **improve**: Make the copy more engaging and persuasive.
+                    - **shorten**: Make the copy shorter and punchier.
+                    - **longer**: Expand the copy with more descriptive benefits.
+                    - **friendly**: Use a warm, approachable, emotional tone.
+                    - **professional**: Establish trust with a premium, confident tone.
+                    - **urgent**: Create a sense of urgency and FOMO.
+                  enum: ["improve", "shorten", "longer", "friendly", "professional", "urgent"]
+                  default: "improve"
+      responses:
+        "200":
+          description: Text variation optimized successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Successful optimization
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      - id: "layer1"
+                        name: "Title"
+                        text: "Buy Now for 50% Off!"
+        "400":
+          description: Bad request - missing parameters or invalid mode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_ref_image:
+                  summary: Missing refImage in auto mode
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST"
+                    result: null
+                    error: "refImage is required when mode is 'auto'"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+                    error: "Authorization header is required"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "INTERNAL_SERVER_ERROR"
+                    result: null
+
   /aivision/autoBackgroundRemoval:
     post:
       summary: Auto background removal
@@ -800,6 +909,11 @@ paths:
                   description: Whether to generate the final image (optional, defaults to "true"). Set to "false" to skip image generation.
                   enum: ["true", "false"]
                   default: "true"
+                generateText:
+                  type: string
+                  description: Whether to generate the final text (optional, defaults to "false"). Set to "true" to enable text generation.
+                  enum: ["true", "false"]
+                  default: "false"
                 batchSize:
                   type: integer
                   description: Number of tasks to create per image (optional, defaults to 1). When batchSize > 1, multiple tasks are created with the same job_id but different task_ids and sequential indices.
