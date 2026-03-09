@@ -97,7 +97,7 @@ Mico Gen AI supports three powerful AI platforms:
 
 ## Next Steps
 
-- Explore our [API Documentation](/docs/developers/mico-gen-ai/introduction) for detailed endpoint information
+- Explore our [API Documentation](/docs/developers/mico-gen-ai/mico-gen-ai) for detailed endpoint information
 - Browse our comprehensive API reference for specific use cases
 
 ## Need Help?

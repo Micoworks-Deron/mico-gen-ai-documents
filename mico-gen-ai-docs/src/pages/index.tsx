@@ -25,7 +25,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--lg"
-            to="/docs/developers/mico-gen-ai/introduction">
+            to="/docs/developers/mico-gen-ai/mico-gen-ai">
             View API Docs
           </Link>
         </div>

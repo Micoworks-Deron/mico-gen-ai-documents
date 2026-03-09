@@ -72,7 +72,7 @@ const config: Config = {
           items: [
             {
               label: "API Documentation",
-              to: "/docs/developers/mico-gen-ai/introduction",
+              to: "/docs/developers/mico-gen-ai/mico-gen-ai",
             },
             {
               label: "Getting Started",
@@ -101,7 +101,7 @@ const config: Config = {
           items: [
             {
               label: "API Documentation",
-              to: "/docs/developers/mico-gen-ai/introduction",
+              to: "/docs/developers/mico-gen-ai/mico-gen-ai",
             },
             {
               label: "Getting Started",
