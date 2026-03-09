@@ -756,6 +756,85 @@ paths:
                     message: "INTERNAL_SERVER_ERROR"
                     result: null
 
+  /aivision/textVariation:
+    post:
+      summary: Text Variation (Manual/Auto Mode)
+      operationId: text-variation
+      description: |
+        Optimize ad text layers with manual prompt or auto analysis mode.
+        
+        **Important Logic Constraints:**
+        - When `mode` is **"auto"**, the `refImage` parameter is **REQUIRED** to analyze the visual context.
+        - When `mode` is **"manual"**, the `prompt` parameter is **REQUIRED**.
+      tags:
+        - AI Vision
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - mode
+                - textLayers
+              properties:
+                mode:
+                  type: string
+                  enum: ["manual", "auto"]
+                  description: Mode of variation. 'auto' requires 'refImage', and 'manual' requires 'prompt'.
+                textLayers:
+                  type: string
+                  description: JSON string array of TextLayer objects. Must be a valid JSON array.
+                refImage:
+                  type: string
+                  format: binary
+                  description: Reference image file for analyzing visual context. **Required if mode is 'auto'**.
+                prompt:
+                  type: string
+                  description: Manual prompt for text optimization. **Required if mode is 'manual'**.
+                autoOption:
+                  type: string
+                  description: |
+                    Automatic option to direct the text variation style. Defaults to "improve".
+                    Supported values:
+                    - **improve**: Make the copy more engaging and persuasive.
+                    - **shorten**: Make the copy shorter and punchier.
+                    - **longer**: Expand the copy with more descriptive benefits.
+                    - **friendly**: Use a warm, approachable, emotional tone.
+                    - **professional**: Establish trust with a premium, confident tone.
+                    - **urgent**: Create a sense of urgency and FOMO.
+                  enum: ["improve", "shorten", "longer", "friendly", "professional", "urgent"]
+                  default: "improve"
+      responses:
+        "200":
+          description: Text variation optimized successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success:
+                  summary: Successful optimization
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      textLayers: []
+        "400":
+          description: Missing input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /mcr/templateVariation:
     post:
       summary: Template variation optimization
@@ -765,6 +844,12 @@ paths:
         When batchSize is provided, creates multiple tasks per image (e.g., batchSize=2 creates 2 tasks with the same job_id but different task_ids).
         
         This is an asynchronous operation that returns a job_id. Use the `/aivision/jobs/:job_id` endpoint to check the status and retrieve results.
+        
+        **Key Parameter Behaviors**:
+        - `prompt`: Defaults to "do a variation as a pro designer" if left empty.
+        - `generateImage`: Controls whether the AI should output a new background/image layout. Defaults to true.
+        - `generateText`: Controls whether the AI should generate new text copies for the layers. Defaults to false.
+        - `batchSize`: Number of variations to process at the same time. Defaults to 1.
       tags:
         - Mico Gen AI
       security:
@@ -800,6 +885,11 @@ paths:
                   description: Whether to generate the final image (optional, defaults to "true"). Set to "false" to skip image generation.
                   enum: ["true", "false"]
                   default: "true"
+                generateText:
+                  type: string
+                  description: Whether to generate the final text (optional, defaults to "false"). Set to "true" to enable text generation.
+                  enum: ["true", "false"]
+                  default: "false"
                 batchSize:
                   type: integer
                   description: Number of tasks to create per image (optional, defaults to 1). When batchSize > 1, multiple tasks are created with the same job_id but different task_ids and sequential indices.
