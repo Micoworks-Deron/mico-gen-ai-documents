@@ -906,9 +906,9 @@ paths:
                   description: Additional metadata for the request (optional)
                 generateImage:
                   type: string
-                  description: Whether to generate the final image (optional, defaults to "true"). Set to "false" to skip image generation.
+                  description: Whether to generate the final image (optional, defaults to "false"). Set to "true" to enable image generation.
                   enum: ["true", "false"]
-                  default: "true"
+                  default: "false"
                 generateText:
                   type: string
                   description: Whether to generate the final text (optional, defaults to "false"). Set to "true" to enable text generation.
