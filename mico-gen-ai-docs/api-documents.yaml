@@ -11,6 +11,7 @@ info:
     - **Stock Photo Generation**: Generate stock photo style images with enhanced prompts and detailed control options
     - **Inpainting Removal**: Remove objects from images using AI inpainting
     - **Image to Video**: Convert an uploaded image to a video
+    - **Brand Extraction**: Extract brand identity (logos, fonts, colors, key images) from a website URL
     - **Job Status Tracking**: Monitor the progress and retrieve results for asynchronous AI vision tasks
     - **Job Cancellation**: Cancel a job in progress
 
@@ -75,6 +76,8 @@ servers:
 tags:
   - name: Mico Gen AI
     description: AI-powered image processing and generation endpoints
+  - name: Brand Extraction
+    description: Brand identity extraction from website URLs
   - name: Authentication
     description: Authentication and token management endpoints
 
@@ -1433,6 +1436,180 @@ paths:
                     message: "INTERNAL_SERVER_ERROR"
                     result: null
 
+  /brand/extract:
+    post:
+      summary: Extract brand identity from website
+      operationId: brand-extract
+      description: |
+        Extract comprehensive brand identity information from a given website URL.
+        The service crawls the website, collects assets (images, CSS, fonts), and analyzes them to produce a structured brand kit.
+
+        ### Extracted Information
+        - **Brand Name**: Detected from page titles, Open Graph metadata, and header elements
+        - **Logos**: Identified from header images, favicons, and OG images with confidence scoring
+        - **Fonts**: Extracted from CSS files and Google Fonts references
+        - **Colors**: Extracted from CSS and key images, clustered into primary/secondary/accent roles
+        - **Key Images**: Hero images, product photos, banners (excluding logos)
+        - **Brand Summary**: Generated from OG descriptions and about page content
+
+        This is a **synchronous** operation — the response is returned once extraction is complete.
+        Processing time depends on the website size and number of pages crawled.
+
+        > ⚠️ **Anti-Crawling Warning**
+        >
+        > Some websites enforce anti-crawling / anti-scraping policies (e.g. via `robots.txt`, WAF rules, rate limiting, or bot detection).
+        > Attempting to extract brand information from such websites may result in:
+        > - **Temporary IP blocking** — the service's outbound IP may be rate-limited or temporarily banned by the target website.
+        > - **Permanent IP blocking** — repeated requests may cause the target website to permanently block the service's IP address.
+        > - **Incomplete or empty results** — if the website blocks the crawler, extracted data may be missing or incomplete.
+        >
+        > Please ensure you have the right to crawl the target website before using this endpoint.
+
+        ### Example (Development)
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/brand/extract' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --header 'Content-Type: application/json' \
+          --data '{"url": "https://example.com"}'
+        ```
+
+        ### Example (Staging)
+        ```bash
+        curl -k --location 'https://mico.gen.ai.stg-craft.mico.one/brand/extract' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --header 'Content-Type: application/json' \
+          --data '{"url": "https://example.com"}'
+        ```
+      tags:
+        - Brand Extraction
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The website URL to extract brand information from
+                  example: "https://example.com"
+            examples:
+              basic:
+                summary: Basic brand extraction
+                description: Extract brand identity from a website
+                value:
+                  url: "https://example.com"
+              with_path:
+                summary: Specific page URL
+                description: Extract brand identity starting from a specific page
+                value:
+                  url: "https://example.com/about"
+      responses:
+        "200":
+          description: Brand information extracted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/BrandKit"
+              examples:
+                success:
+                  summary: Successful brand extraction
+                  value:
+                    success: true
+                    data:
+                      job_id: "4110b319-12f1-426f-8844-483509cde46d"
+                      website_url: "https://example.com"
+                      brand_name: "Example Brand"
+                      brand_summary: "A leading company providing innovative solutions."
+                      logos:
+                        - url: "https://example.com/logo.png"
+                          local_path: "/tmp/brand-extract/4110b319/logo.png"
+                          source: "header"
+                          confidence: 0.95
+                        - url: "https://example.com/favicon.ico"
+                          local_path: "/tmp/brand-extract/4110b319/favicon.ico"
+                          source: "favicon"
+                          confidence: 0.3
+                      fonts:
+                        - family: "Inter"
+                          role: "heading"
+                          source_url: "https://fonts.googleapis.com/css2?family=Inter"
+                          confidence: 0.8
+                        - family: "Roboto"
+                          role: "body"
+                          source_url: "https://fonts.googleapis.com/css2?family=Roboto"
+                          confidence: 0.6
+                      colors:
+                        - hex: "#1a73e8"
+                          role: "primary"
+                          source: "css"
+                        - hex: "#34a853"
+                          role: "secondary"
+                          source: "css"
+                        - hex: "#fbbc05"
+                          role: "accent"
+                          source: "image"
+                      key_images:
+                        - url: "https://example.com/hero.jpg"
+                          local_path: "/tmp/brand-extract/4110b319/hero.jpg"
+                          alt: "Hero banner"
+                          type: "hero"
+                          confidence: 0.9
+                          width: 1920
+                          height: 1080
+        "400":
+          description: Bad request - missing or invalid URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                missing_url:
+                  summary: Missing URL
+                  value:
+                    error: "URL is required"
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                extraction_failed:
+                  summary: Extraction failed
+                  value:
+                    error: "Failed to extract brand information"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -1695,6 +1872,167 @@ components:
           description: Pixels to extend on the bottom
           default: 128
           example: 128
+
+    BrandKit:
+      type: object
+      description: Comprehensive brand identity extracted from a website
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the extraction job
+          example: "4110b319-12f1-426f-8844-483509cde46d"
+        website_url:
+          type: string
+          format: uri
+          description: The source website URL
+          example: "https://example.com"
+        brand_name:
+          type: string
+          description: Detected brand name from page titles, OG metadata, and header elements
+          example: "Example Brand"
+        brand_summary:
+          type: string
+          description: Brief brand description extracted from OG descriptions or about page
+          example: "A leading company providing innovative solutions."
+        logos:
+          type: array
+          description: Detected logo candidates, sorted by confidence (max 10)
+          items:
+            $ref: "#/components/schemas/LogoEntry"
+        fonts:
+          type: array
+          description: Detected font families from CSS and Google Fonts (max 6)
+          items:
+            $ref: "#/components/schemas/FontEntry"
+        colors:
+          type: array
+          description: Extracted and clustered brand colors with role assignments
+          items:
+            $ref: "#/components/schemas/ColorEntry"
+        key_images:
+          type: array
+          description: Key images (hero, product, banner) excluding logos
+          items:
+            $ref: "#/components/schemas/ImageEntry"
+      required:
+        - job_id
+        - website_url
+        - brand_name
+        - brand_summary
+        - logos
+        - fonts
+        - colors
+        - key_images
+
+    LogoEntry:
+      type: object
+      description: A detected logo candidate
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL of the logo image
+          example: "https://example.com/logo.png"
+        local_path:
+          type: string
+          description: Local file path of the downloaded logo
+          example: "/tmp/brand-extract/4110b319/logo.png"
+        source:
+          type: string
+          description: Where the logo was found
+          enum: [header, favicon, og_image, logo]
+          example: "header"
+        confidence:
+          type: number
+          format: float
+          description: Confidence score (0.0 to 1.0)
+          minimum: 0
+          maximum: 1
+          example: 0.95
+
+    FontEntry:
+      type: object
+      description: A detected font family
+      properties:
+        family:
+          type: string
+          description: Font family name
+          example: "Inter"
+        role:
+          type: string
+          description: Role of the font in the design
+          enum: [heading, body, unknown]
+          example: "heading"
+        source_url:
+          type: string
+          format: uri
+          description: URL where the font was loaded from
+          example: "https://fonts.googleapis.com/css2?family=Inter"
+        confidence:
+          type: number
+          format: float
+          description: Confidence score (0.0 to 1.0)
+          minimum: 0
+          maximum: 1
+          example: 0.8
+
+    ColorEntry:
+      type: object
+      description: An extracted brand color
+      properties:
+        hex:
+          type: string
+          description: Color in hexadecimal format
+          example: "#1a73e8"
+        role:
+          type: string
+          description: Role of the color in the brand palette
+          enum: [primary, secondary, accent, ""]
+          example: "primary"
+        source:
+          type: string
+          description: Where the color was extracted from
+          enum: [css, image, ""]
+          example: "css"
+
+    ImageEntry:
+      type: object
+      description: A key image from the website
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL of the image
+          example: "https://example.com/hero.jpg"
+        local_path:
+          type: string
+          description: Local file path of the downloaded image
+          example: "/tmp/brand-extract/4110b319/hero.jpg"
+        alt:
+          type: string
+          description: Alt text of the image
+          example: "Hero banner"
+        type:
+          type: string
+          description: Classification type of the image
+          enum: [hero, product, lifestyle, banner]
+          example: "hero"
+        confidence:
+          type: number
+          format: float
+          description: Classification confidence score (0.0 to 1.0)
+          minimum: 0
+          maximum: 1
+          example: 0.9
+        width:
+          type: integer
+          description: Image width in pixels
+          example: 1920
+        height:
+          type: integer
+          description: Image height in pixels
+          example: 1080
 
 security:
   - BearerAuth: []
