@@ -78,6 +78,8 @@ tags:
     description: AI-powered image processing and generation endpoints
   - name: Brand Extraction
     description: Brand identity extraction from website URLs
+  - name: Survey
+    description: Survey question answer generation endpoints
   - name: Authentication
     description: Authentication and token management endpoints
 
@@ -1609,6 +1611,198 @@ paths:
                   summary: Extraction failed
                   value:
                     error: "Failed to extract brand information"
+
+  /survey/generateAnswers:
+    post:
+      summary: Generate Survey Answers
+      operationId: generate-survey-answers
+      description: |
+        Generate contextually appropriate survey answer options from a question and optional brand/industry context.
+
+        This is a **synchronous** operation — the response is returned once generation is complete.
+
+        ### How It Works
+        1. Provide a survey question and optionally a brand URL or context
+        2. If a `url` is provided, the service automatically extracts brand identity (name, summary, industry, tone) from the website
+        3. If `industry` or `tone` are not provided, they are inferred from the extracted brand data using AI
+        4. The merged context is used to generate contextually appropriate answer options using AI (GPT)
+
+        ### Parameters
+        - **question** (required): The survey question to generate answers for
+        - **num_options** (optional): Number of answer options to generate (2–10, default: 4)
+        - **language** (optional): Language for generated answers (default: `ja` for Japanese)
+        - **context** (optional): JSON string with brand/industry context (`brand_name`, `brand_summary`, `industry`, `tone`)
+        - **url** (optional): Website URL to auto-extract brand context from
+
+        ### Example (Development)
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/survey/generateAnswers' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'question="好きな飲み物は何ですか？"' \
+          --form 'num_options="5"' \
+          --form 'language="ja"'
+        ```
+
+        ### Example with URL context
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/survey/generateAnswers' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'question="Which product feature do you value most?"' \
+          --form 'num_options="4"' \
+          --form 'language="en"' \
+          --form 'url="https://example.com"'
+        ```
+
+        ### Example with context JSON
+        ```bash
+        curl --location 'https://api-mico-gen-ai.dev-craft.mico.one/survey/generateAnswers' \
+          --header 'Authorization: Bearer YOUR_API_KEY' \
+          --form 'question="どのサービスに興味がありますか？"' \
+          --form 'num_options="4"' \
+          --form 'language="ja"' \
+          --form 'context="{\"brand_name\": \"Example Corp\", \"industry\": \"technology\", \"tone\": \"professional\"}"'
+        ```
+      tags:
+        - Survey
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: The survey question to generate answer options for
+                  example: "好きな飲み物は何ですか？"
+                num_options:
+                  type: integer
+                  description: Number of answer options to generate (clamped between 2 and 10)
+                  minimum: 2
+                  maximum: 10
+                  default: 4
+                  example: 4
+                language:
+                  type: string
+                  description: Language for the generated answers (e.g. "ja" for Japanese, "en" for English)
+                  default: "ja"
+                  example: "ja"
+                context:
+                  type: string
+                  description: |
+                    Optional JSON string with brand/industry context. Supported fields:
+                    - `brand_name`: Name of the brand
+                    - `brand_summary`: Brief description of the brand
+                    - `industry`: Industry/sector (e.g. fitness, finance, food, beauty, technology)
+                    - `tone`: Communication tone (formal, casual, friendly, professional, playful, luxurious)
+                  example: '{"brand_name": "Example Corp", "industry": "technology", "tone": "professional"}'
+                url:
+                  type: string
+                  format: uri
+                  description: Website URL to auto-extract brand context from. When provided, the service extracts brand identity and infers industry/tone if not supplied in context.
+                  example: "https://example.com"
+            examples:
+              basic_japanese:
+                summary: Basic question in Japanese
+                description: Generate 4 answer options for a Japanese question
+                value:
+                  question: "好きな飲み物は何ですか？"
+                  num_options: 4
+                  language: "ja"
+              with_url:
+                summary: Question with brand URL
+                description: Auto-extract brand context from a website
+                value:
+                  question: "Which product feature do you value most?"
+                  num_options: 5
+                  language: "en"
+                  url: "https://example.com"
+              with_context:
+                summary: Question with explicit context
+                description: Provide brand/industry context directly
+                value:
+                  question: "どのサービスに興味がありますか？"
+                  num_options: 4
+                  language: "ja"
+                  context: '{"brand_name": "Example Corp", "industry": "technology", "tone": "professional"}'
+      responses:
+        "200":
+          description: Survey answers generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              examples:
+                success_japanese:
+                  summary: Successful generation (Japanese)
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      question: "好きな飲み物は何ですか？"
+                      answers:
+                        - "コーヒー"
+                        - "紅茶"
+                        - "ジュース"
+                        - "水"
+                      processingTime: 1234
+                success_english:
+                  summary: Successful generation (English)
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      question: "Which product feature do you value most?"
+                      answers:
+                        - "Ease of use"
+                        - "Performance"
+                        - "Price"
+                        - "Customer support"
+                        - "Integrations"
+                      processingTime: 2150
+        "400":
+          description: Bad request - missing or empty question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_question:
+                  summary: Missing question field
+                  value:
+                    status_code: 400
+                    message: "BAD_REQUEST: question is required"
+                    result: null
+        "401":
+          description: Unauthorized - invalid or missing authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_auth:
+                  summary: Missing authorization header
+                  value:
+                    status_code: 401
+                    message: "UNAUTHORIZED"
+                    result: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Internal server error
+                  value:
+                    status_code: 500
+                    message: "Failed to generate survey answers: OpenAI API error"
+                    result: null
 
 components:
   securitySchemes:

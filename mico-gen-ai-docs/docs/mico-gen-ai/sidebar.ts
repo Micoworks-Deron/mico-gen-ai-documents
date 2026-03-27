@@ -56,6 +56,18 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Survey",
+      items: [
+        {
+          type: "doc",
+          id: "mico-gen-ai/generate-survey-answers",
+          label: "Generate Survey Answers",
+          className: "api-method post",
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "AI Vision",
       items: [
         {
