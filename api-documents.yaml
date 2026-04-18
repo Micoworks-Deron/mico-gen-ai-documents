@@ -113,7 +113,22 @@ paths:
                   description: Mode of variation. 'auto' requires 'refImage', and 'manual' requires 'prompt'.
                 textLayers:
                   type: string
-                  description: JSON string array of TextLayer objects. Must be a valid JSON array.
+                  description: |
+                    JSON string of a **TextLayer array**. Each object must include ONLY these 3 fields: `id`, `name`, `text`.
+
+                    **IMPORTANT**:
+                    - Only include text layers, NOT the full template.
+                    - Only pass `id`, `name`, `text` — do NOT include other layer properties (position, size, color, font, etc.).
+                    - Pass an array (even for a single layer), not a raw object.
+
+                    Example:
+                    ```json
+                    [
+                      {"id":"1008583","name":"Text layer","text":"土日祝休み"},
+                      {"id":"1008584","name":"Text layer","text":"少人数で\n勤務"},
+                      {"id":"1008585","name":"Text layer","text":"事前の\n見学可能"}
+                    ]
+                    ```
                 refImage:
                   type: string
                   format: binary
@@ -134,6 +149,17 @@ paths:
                     - **urgent**: Create a sense of urgency and FOMO.
                   enum: ["improve", "shorten", "longer", "friendly", "professional", "urgent"]
                   default: "improve"
+                batchSize:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  default: 1
+                  description: |
+                    Number of text variations to generate per layer.
+                    - `1` (default): Each layer returns a single optimized `text` field (backward-compatible).
+                    - `2`–`10`: Each layer returns a `variations` array with that many distinct copy options (each taking a different creative angle).
+
+                    Values outside `1`–`10` are clamped to the nearest bound.
       responses:
         "200":
           description: Text variation optimized successfully
@@ -142,15 +168,38 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
               examples:
-                success:
-                  summary: Successful optimization
+                single_variation:
+                  summary: Default (batchSize=1) — returns a `text` field per layer
                   value:
                     status_code: 200
                     message: "SUCCESS"
                     result:
-                      - id: "layer1"
-                        name: "Title"
-                        text: "Buy Now for 50% Off!"
+                      textLayers:
+                        - id: "1008583"
+                          name: "Text layer"
+                          text: "土日祝完全休み！"
+                        - id: "1008584"
+                          name: "Text layer"
+                          text: "少人数の\nアットホーム勤務"
+                batch_variations:
+                  summary: Multiple variations (batchSize > 1) — returns a `variations` array per layer
+                  value:
+                    status_code: 200
+                    message: "SUCCESS"
+                    result:
+                      textLayers:
+                        - id: "1008583"
+                          name: "Text layer"
+                          variations:
+                            - "土日祝完全休み！"
+                            - "週末はしっかり休める"
+                            - "土日祝はお休み"
+                        - id: "1008584"
+                          name: "Text layer"
+                          variations:
+                            - "少人数の\nアットホーム勤務"
+                            - "少人数チームで\n働きやすい"
+                            - "アットホームな\n少人数制"
         "400":
           description: Bad request - missing parameters or invalid mode
           content:
