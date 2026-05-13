@@ -12,26 +12,8 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "mico-gen-ai/auto-background-removal",
-          label: "Auto background removal",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/generate-human-images",
-          label: "Generate human images",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/generate-stock-photo-images",
-          label: "Generate stock photo images",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/image-to-video",
-          label: "Image to Video",
+          id: "mico-gen-ai/text-variation-manual-auto-mode",
+          label: "Text Variation (Manual/Auto Mode)",
           className: "api-method post",
         },
         {
@@ -56,12 +38,12 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Survey",
+      label: "Brand Extraction",
       items: [
         {
           type: "doc",
-          id: "mico-gen-ai/generate-survey-answers",
-          label: "Generate Survey Answers",
+          id: "mico-gen-ai/brand-extract",
+          label: "Extract brand identity from website",
           className: "api-method post",
         },
       ],
@@ -74,12 +56,6 @@ const sidebar: SidebarsConfig = {
           type: "doc",
           id: "mico-gen-ai/ad-variation",
           label: "Ad Variation (Manual/Auto Mode)",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "mico-gen-ai/remove-objects-using-inpainting",
-          label: "Remove objects using inpainting",
           className: "api-method post",
         },
       ],
